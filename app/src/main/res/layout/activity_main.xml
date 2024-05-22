@@ -10,8 +10,8 @@
         android:id="@+id/login_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
-        android:enabled="false">
+        android:enabled="false"
+        android:text="Login">
 
     </Button>
 </LinearLayout>
