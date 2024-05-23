@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
@@ -16,14 +17,10 @@ import dji.sdk.base.BaseProduct
 import dji.sdk.sdkmanager.DJISDKInitEvent
 import dji.sdk.sdkmanager.DJISDKManager
 import java.lang.Exception
+import android.content.Intent
 
 class MainActivity : ComponentActivity() {
 
-//    init {
-//        Thread.setDefaultUncaughtExceptionHandler { thread, e ->
-//            Log.e("test", "Caught unhandled exception: $e", e)
-//        }
-//    }
 
     private lateinit var loginButton: Button
 
@@ -34,9 +31,16 @@ class MainActivity : ComponentActivity() {
 
         loginButton = findViewById(R.id.login_btn)
 
+
         checkPermissionAndRequest()
 
-        // 권한 확인 및 요청
+        loginButton.setOnClickListener {
+            val intent = Intent(this, DAIRActivity::class.java)
+            startActivity(intent)
+        }
+
+
+
 
     }
 
@@ -88,9 +92,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun initializeSDK() {
-        Log.d("test","initializeSDK1")
         try {
-            Log.d("test","initializeSDK2")
+            Log.d("test","initializeSDK")
             DJISDKManager.getInstance()
                 .registerApp(this, object : DJISDKManager.SDKManagerCallback {
                     override fun onRegister(error: DJIError) {
@@ -109,6 +112,7 @@ class MainActivity : ComponentActivity() {
                                 Toast.makeText(applicationContext, "SDK 연결 실패", Toast.LENGTH_LONG)
                                     .show()
                                 Log.d("test","연결 실패 ")
+                                Log.d("test","실패 이유는 : $error")
                                 loginButton.isEnabled = false
                             }
                         }
@@ -146,4 +150,6 @@ class MainActivity : ComponentActivity() {
             Log.d("test","오류는 : $e")
         }
     }
+
+
 }

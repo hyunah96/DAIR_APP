@@ -55,6 +55,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".DAIRActivity">
+
+        </activity>
         <meta-data
             android:name="com.dji.sdk.API_KEY"
             android:value="a84d68303cd317da485ac2a9"/>
