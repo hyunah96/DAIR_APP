@@ -10,8 +10,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        //jcenter()
+        jcenter()
         maven { url 'https://developer.dji.com/mobile-sdk/maven/' }
+        maven { url "https://api.mapbox.com/downloads/v2/releases/maven"
+        }
     }
 }
 

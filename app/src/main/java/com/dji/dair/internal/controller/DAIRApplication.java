@@ -2,6 +2,7 @@ package com.dji.dair.internal.controller;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.multidex.MultiDex;
 
@@ -15,6 +16,7 @@ import dji.sdk.sdkmanager.BluetoothProductConnector;
 import dji.sdk.sdkmanager.DJISDKManager;
 
 public class DAIRApplication extends Application {
+
     public static final String TAG = DAIRApplication.class.getName();
 
     private static BaseProduct product;

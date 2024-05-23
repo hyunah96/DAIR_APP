@@ -15,10 +15,15 @@ import dji.sdk.base.BaseComponent
 import dji.sdk.base.BaseProduct
 import dji.sdk.sdkmanager.DJISDKInitEvent
 import dji.sdk.sdkmanager.DJISDKManager
-import android.content.Context
 import java.lang.Exception
 
 class MainActivity : ComponentActivity() {
+
+//    init {
+//        Thread.setDefaultUncaughtExceptionHandler { thread, e ->
+//            Log.e("test", "Caught unhandled exception: $e", e)
+//        }
+//    }
 
     private lateinit var loginButton: Button
 
@@ -31,17 +36,17 @@ class MainActivity : ComponentActivity() {
 
         checkPermissionAndRequest()
 
+        // 권한 확인 및 요청
 
     }
 
     private fun checkPermissionAndRequest() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
             Log.d("test", "버전은 : ${Build.VERSION.SDK_INT}")
             checkAndRequestPermissions()
-
         } else {
-            Log.d("test", "checkPermissionAndRequest else")
-            initializeSDK()
+            //initializeSDK()
         }
 
     }
@@ -56,13 +61,14 @@ class MainActivity : ComponentActivity() {
         val permissionsNeeded = permissions.filter {
             ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
         }
-        //비어있지 않으면 (권한 안받은게 있으면)
+
         if (permissionsNeeded.isNotEmpty()) {
             Log.d("test","permissionsNeeded.isNotEmpty")
             ActivityCompat.requestPermissions(this, permissionsNeeded.toTypedArray(), 1)
         } else {
-            //이미 권한이 부여되어 있을 때
-            Log.d("test"," 권한 있음 안받은 권한 : $permissionsNeeded")
+            Log.d("test","else")
+            Log.d("test","$permissionsNeeded")
+            // 모든 권한이 이미 부여된 경우 SDK를 초기화
             initializeSDK()
         }
     }
@@ -79,66 +85,65 @@ class MainActivity : ComponentActivity() {
                 Log.d("test","권한이 필요합니다")
             }
         }
-        else {
-            Log.d("test","1번이 아님")
-        }
     }
 
     private fun initializeSDK() {
-        Log.d("test", "initializeSDK")
-        Log.d("test", "탔다1 ")
-        val mDJISDKManagerCallback = object : DJISDKManager.SDKManagerCallback {
-            override fun onRegister(error: DJIError) {
-                Toast.makeText(applicationContext, "onRegister 입니다 ", Toast.LENGTH_LONG)
-                    .show()
-                Log.d("test", "[1] onRegister 입니다 ")
-
-                if (error == DJISDKError.REGISTRATION_SUCCESS) {
-                    DJISDKManager.getInstance().startConnectionToProduct()
-                    Log.d("test", "SDK 연결 성공 ")
-                } else {
-                    Log.d("test", "SDK 연결 실패")
-                }
-            }
-
-            override fun onProductDisconnect() {
-                TODO("Not yet implemented")
-            }
-
-            override fun onProductConnect(baseProduct: BaseProduct) {
-                Toast.makeText(applicationContext, "[2] 연결되었습니다", Toast.LENGTH_LONG).show()
-                Log.d("test", "[2] $baseProduct 연결되었습니다  ")
-            }
-
-            override fun onComponentChange(
-                p0: BaseProduct.ComponentKey?,
-                p1: BaseComponent?,
-                p2: BaseComponent?
-            ) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onDatabaseDownloadProgress(p0: Long, p1: Long) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onInitProcess(p0: DJISDKInitEvent?, p1: Int) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onProductChanged(p0: BaseProduct?) {
-                TODO("Not yet implemented")
-            }
-        }
+        Log.d("test","initializeSDK1")
         try {
-            Log.d("test","try!!!")
-            DJISDKManager.getInstance().registerApp(applicationContext, mDJISDKManagerCallback)
+            Log.d("test","initializeSDK2")
+            DJISDKManager.getInstance()
+                .registerApp(this, object : DJISDKManager.SDKManagerCallback {
+                    override fun onRegister(error: DJIError) {
+                        if (error == DJISDKError.REGISTRATION_SUCCESS) {
+                            runOnUiThread {
 
+                                Toast.makeText(applicationContext, "SDK 연결 성공 ", Toast.LENGTH_LONG)
+                                    .show()
+                                Log.d("test","연결 성공")
+                                loginButton.isEnabled = true
+                                DJISDKManager.getInstance().startConnectionToProduct()
+
+                            }
+                        } else {
+                            runOnUiThread {
+                                Toast.makeText(applicationContext, "SDK 연결 실패", Toast.LENGTH_LONG)
+                                    .show()
+                                Log.d("test","연결 실패 ")
+                                loginButton.isEnabled = false
+                            }
+                        }
+
+                    }
+
+                    override fun onComponentChange(
+                        p0: BaseProduct.ComponentKey?,
+                        p1: BaseComponent?,
+                        p2: BaseComponent?
+                    ) {
+                    }
+
+                    override fun onProductDisconnect() {
+                    }
+
+                    override fun onDatabaseDownloadProgress(p0: Long, p1: Long) {
+                    }
+
+
+                    override fun onInitProcess(p0: DJISDKInitEvent?, p1: Int) {
+                        Log.d("test", "onInitProcess event: $p0, progress: $p1")
+                    }
+
+                    override fun onProductChanged(p0: BaseProduct?) {
+
+                    }
+
+                    override fun onProductConnect(p0: BaseProduct?) {
+                    }
+
+                })
         }
         catch (e:Exception){
-            Log.d("test","안되는 이유 : ${e.printStackTrace()}")
+            Log.d("test","오류는 : $e")
         }
     }
-
-
-    }
+}
