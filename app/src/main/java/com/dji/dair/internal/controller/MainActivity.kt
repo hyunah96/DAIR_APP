@@ -142,6 +142,9 @@ class MainActivity : ComponentActivity() {
                     }
 
                     override fun onProductConnect(p0: BaseProduct?) {
+
+                        Log.d("test","연결되었습니다 $p0")
+                        Log.d("test", "연결되었습니다. 제품 모델: ${p0?.model}, 펌웨어 버전: ${p0?.firmwarePackageVersion}")
                     }
 
                 })

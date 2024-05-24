@@ -13,7 +13,5 @@ class DAIRActivity: ComponentActivity() {
         Log.d("test","DAIRActivity")
         setContentView(R.layout.acitivity_default_widgets)
 
-        val btr = DAIRApplication.BATTERY_SERVICE.length
-        Log.d("test"," 배터리 상태는 $btr")
     }
 }

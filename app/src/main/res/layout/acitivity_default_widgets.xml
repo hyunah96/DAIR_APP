@@ -56,7 +56,7 @@
         <dji.ux.widget.WiFiSignalWidget
             android:layout_width="22dp"
             android:layout_height="20dp"/>
-
+        <!--드론 배터리-->
         <dji.ux.widget.BatteryWidget
             android:layout_width="96dp"
             android:layout_height="22dp"
