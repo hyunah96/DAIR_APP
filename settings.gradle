@@ -13,9 +13,18 @@ dependencyResolutionManagement {
         jcenter()
         maven { url 'https://developer.dji.com/mobile-sdk/maven/' }
         maven { url "https://api.mapbox.com/downloads/v2/releases/maven"
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials{
+                username = "mapbox"
+                password = MAPBOX_DOWNLOADS_TOKEN
+            }
         }
+        maven { url 'https://jitpack.io'}
     }
 }
 
 rootProject.name = "DAIR"
 include ':app'
+include ':android-sdk-v5-uxsdk'

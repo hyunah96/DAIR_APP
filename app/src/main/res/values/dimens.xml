@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="dialog_multi_rc_gimbal_source_change_width">200dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="dp_206_in_sw640">200dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <!-- UI Text Size -->
+    <dimen name="textsize_connection">20dp</dimen>
+
+    <!-- List View Relative -->
+    <dimen name="item_arrow_width">26dp</dimen>
+    <dimen name="item_arrow_height">44dp</dimen>
+    <dimen name="item_min_height">44dp</dimen>
+    <dimen name="item_value_size">18sp</dimen>
+    <dimen name="item_title_size">18sp</dimen>
+    <dimen name="test_log_textsize">17sp</dimen>
+    <dimen name="button_widget">200dp</dimen>
+
+
+</resources>

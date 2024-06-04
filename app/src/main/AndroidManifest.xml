@@ -22,16 +22,23 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+
     <uses-feature
         android:name="android.hardware.usb.host"
         android:required="false"/>
     <uses-feature
         android:name="android.hardware.usb.accessory"
         android:required="true"/>
+
+    <!--OpenGL ES-->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
     <!-- SDK requirement permission end -->
 
     <application
-        android:name=".internal.controller.DAIRApplication"
+        android:name=".internal.controller.DJIAircraftApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -43,9 +50,8 @@
         tools:targetApi="31">
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
-        <service android:name=".internal.controller.DAIRApplication" />
         <activity
-            android:name=".MainActivity"
+            android:name=".DJIAircraftMainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.DAIR">
@@ -56,12 +62,28 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".DAIRActivity">
+        <activity android:name=".DJIMainActivity">
 
         </activity>
+
+        <activity
+            android:name="dji.v5.ux.sample.showcase.defaultlayout.DefaultLayoutActivity"
+            android:theme="@style/Theme.DAIR"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false">
+
+        </activity>
+        <!--dji sdk key-->
         <meta-data
             android:name="com.dji.sdk.API_KEY"
             android:value="a84d68303cd317da485ac2a9"/>
+        <!--dji sdk key-->
+        <!--google map key-->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCNWK62B8wpPtcjDcMLodCu2MYuueQuUP4"/>
+        <!--google map key-->
 
 
     </application>

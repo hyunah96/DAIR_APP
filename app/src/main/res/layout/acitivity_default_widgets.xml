@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_black"
     android:orientation="horizontal"
-    tools:context=".DAIRActivity">
+    tools:context=".DJIMainActivity">
 
     <!-- Widget to see first person view (FPV) -->
     <dji.ux.widget.FPVWidget
@@ -21,53 +21,82 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <!-- Widgets in top status bar -->
+
     <LinearLayout
         android:id="@+id/signal"
         android:layout_width="match_parent"
-        android:layout_height="25dp"
+        android:layout_height="44dp"
         android:background="@color/dark_gray"
         android:orientation="horizontal">
 
+        <!--연결 보여주는 상단바-->
         <dji.ux.widget.PreFlightStatusWidget
-            android:layout_width="238dp"
-            android:layout_height="25dp"/>
+            android:layout_width="235dp"
+            android:layout_height="45dp"/>
+
+        <!--Flight Mode-->
+        <!--        <dji.ux.widget.FlightModeWidget-->
+        <!--            android:layout_width="193dp"-->
+        <!--            android:layout_height="27dp"/>-->
 
         <dji.ux.widget.FlightModeWidget
-            android:layout_width="103dp"
-            android:layout_height="22dp"/>
+            android:layout_width="111dp"
+            android:layout_height="26dp"
+            android:layout_marginRight="0dp"
+            />
 
+
+        <!--GPS 신호-->
         <dji.ux.widget.GPSSignalWidget
-            android:layout_width="44dp"
-            android:layout_height="22dp"/>
+            android:layout_width="54dp"
+            android:layout_height="26dp"
+            android:layout_marginLeft="0dp"/>
 
+        <!--비전 센서-->
         <dji.ux.widget.VisionWidget
-            android:layout_width="22dp"
-            android:layout_height="22dp"/>
+            android:layout_width="34dp"
+            android:layout_height="26dp"/>
 
+
+        <!--조종기 신호-->
         <dji.ux.widget.RemoteControlSignalWidget
-            android:layout_width="38dp"
-            android:layout_height="22dp"/>
+            android:layout_width="44dp"
+            android:layout_height="26dp"/>
 
+        <!--HD 신호-->
         <dji.ux.widget.VideoSignalWidget
-            android:layout_width="38dp"
-            android:layout_height="22dp"/>
+            android:layout_width="44dp"
+            android:layout_height="26dp"/>
 
+        <!--wifi 신호-->
         <dji.ux.widget.WiFiSignalWidget
-            android:layout_width="22dp"
-            android:layout_height="20dp"/>
+            android:layout_width="81dp"
+            android:layout_height="26dp"/>
+
         <!--드론 배터리-->
-        <dji.ux.widget.BatteryWidget
-            android:layout_width="96dp"
-            android:layout_height="22dp"
-            custom:excludeView="singleVoltage"/>
+<!--        <dji.ux.widget.BatteryWidget-->
+<!--            android:layout_width="58dp"-->
+<!--            android:layout_height="26dp"-->
+<!--            custom:excludeView="singleVoltage"/>-->
 
         <dji.ux.widget.ConnectionWidget
             android:layout_marginTop="3dp"
             android:layout_width="18dp"
             android:layout_height="18dp"/>
+
+
     </LinearLayout>
 
+
+    <!--카메라 관련된 AE,AF/MF,ISO,SHUTTER,F,EV,WB,SD TIME 등
+        AE (Auto Exposure): 자동 노출 조정
+        AF/MF (Auto Focus/Manual Focus): 자동 초점과 수동 초점
+        ISO: 카메라 센서의 빛 감도 설정
+        SHUTTER (Shutter Speed): 셔터 속도
+        F (Aperture): 조리개 값 (빛의 양을 조절)
+        EV (Exposure Value): 노출 값
+        WB (White Balance): 색 온도 조정
+        SD TIME: SD 카드의 남은 공간에 따라 시간이 결정됨-->
 
     <LinearLayout
         android:id="@+id/camera"
@@ -116,6 +145,7 @@
             android:layout_height="30dp"/>
     </LinearLayout>
 
+
     <dji.ux.widget.ManualFocusWidget
         android:layout_below="@id/camera"
         android:layout_alignLeft="@id/camera"
@@ -139,6 +169,7 @@
         android:orientation="horizontal"
         android:padding="12dp">
 
+        <!--나침반 쪽-->
         <dji.ux.widget.dashboard.DashboardWidget
             android:id="@+id/Compass"
             android:layout_width="405dp"
@@ -168,16 +199,16 @@
             android:layout_marginTop="12dp"/>
     </LinearLayout>
 
-
+    <!--사진,영상 메뉴 탭-->
     <dji.ux.widget.controls.CameraControlsWidget
         android:id="@+id/CameraCapturePanel"
         android:layout_alignParentRight="true"
         android:layout_below="@id/camera"
-        android:layout_width="50dp"
-        android:layout_height="213dp"
+        android:layout_width="60dp"
+        android:layout_height="220dp"
         tools:ignore="RtlHardcoded"/>
 
-
+    <!--카메라 설정 눌렀을 때-->
     <dji.ux.panel.CameraSettingExposurePanel
         android:layout_width="180dp"
         android:layout_below="@id/camera"
@@ -188,23 +219,22 @@
         android:visibility="invisible"
         tools:ignore="RtlHardcoded"/>
 
-<!--    <dji.ux.panel.CameraSettingAdvancedPanel-->
-<!--        android:layout_width="180dp"-->
-<!--        android:layout_height="263dp"-->
-<!--        android:layout_below="@id/camera"-->
-<!--        android:layout_toLeftOf="@+id/CameraCapturePanel"-->
-<!--        android:background="@color/transparent"-->
-<!--        android:gravity="center"-->
-<!--        android:visibility="invisible"-->
-<!--        tools:ignore="RtlHardcoded"/>-->
+    <!--    <dji.ux.panel.CameraSettingAdvancedPanel-->
+    <!--        android:layout_width="180dp"-->
+    <!--        android:layout_height="263dp"-->
+    <!--        android:layout_below="@id/camera"-->
+    <!--        android:layout_toLeftOf="@+id/CameraCapturePanel"-->
+    <!--        android:background="@color/transparent"-->
+    <!--        android:gravity="center"-->
+    <!--        android:visibility="invisible"-->
+    <!--        tools:ignore="RtlHardcoded"/>-->
 
     <!-- Pre-flight checklist panel -->
-<!--    <dji.ux.panel.PreFlightCheckListPanel-->
-<!--        android:layout_width="400dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@id/signal"-->
-<!--        custom:excludeItem="ESCStatus"-->
-<!--        android:visibility="gone"/>-->
+    <!--    <dji.ux.panel.PreFlightCheckListPanel-->
+    <!--        android:layout_width="400dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@id/signal"-->
+    <!--        custom:excludeItem="ESCStatus"-->
+    <!--        android:visibility="gone"/>-->
 
 </RelativeLayout>
-

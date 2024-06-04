@@ -7,4 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="background_black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="dark_gray">#80000000</color>
+    <color name="transparent">@android:color/transparent</color>
 </resources>
+

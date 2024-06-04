@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><Layout layout="uxsdk_widget_map" modulePackage="dji.v5.ux" filePath="android-sdk-v5-uxsdk/src/main/res/layout/uxsdk_widget_map.xml" directory="layout" isMerge="true" isBindingData="false" rootNodeType="android.widget.merge" rootNodeViewId="@+id/mapParent"><Targets/></Layout>
