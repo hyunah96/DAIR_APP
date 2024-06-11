@@ -132,11 +132,12 @@ public class PhotoVideoSwitchWidgetModel extends WidgetModel implements ICameraI
     }
 
     /**
-     * Toggle between photo mode and video mode
+     * 사진 모드와 동영상 모드 전환
      *
      * @return Completable
      */
     public Completable toggleCameraMode() {
+        Log.d("test","toggleCameraMode");
         if (flatCameraModule.getCameraModeDataProcessor().getValue() == CameraMode.PHOTO_NORMAL) {
             return flatCameraModule.setCameraMode(djiSdkModel, CameraMode.VIDEO_NORMAL);
         } else {

@@ -14,7 +14,6 @@ import dji.v5.ux.R;
 import dji.v5.ux.cameracore.widget.autoexposurelock.AutoExposureLockWidget;
 import dji.v5.ux.cameracore.widget.cameracontrols.CameraControlsWidget;
 import dji.v5.ux.cameracore.widget.cameracontrols.lenscontrol.LensControlWidget;
-import dji.v5.ux.cameracore.widget.focusexposureswitch.FocusExposureSwitchWidget;
 import dji.v5.ux.cameracore.widget.focusmode.FocusModeWidget;
 import dji.v5.ux.cameracore.widget.fpvinteraction.FPVInteractionWidget;
 import dji.v5.ux.core.panel.systemstatus.SystemStatusListPanelWidget;
@@ -27,7 +26,6 @@ import dji.v5.ux.core.widget.setting.SettingPanelWidget;
 import dji.v5.ux.flight.returnhome.ReturnHomeWidget;
 import dji.v5.ux.flight.takeoff.TakeOffWidget;
 import dji.v5.ux.gimbal.GimbalFineTuneWidget;
-import dji.v5.ux.map.MapWidget;
 import dji.v5.ux.training.simulatorcontrol.SimulatorControlWidget;
 import dji.v5.ux.visualcamera.CameraNDVIPanelWidget;
 import dji.v5.ux.visualcamera.CameraVisiblePanelWidget;
@@ -71,9 +69,6 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
   public final FocalZoomWidget widgetFocalZoom;
 
   @NonNull
-  public final FocusExposureSwitchWidget widgetFocusExposureSwitch;
-
-  @NonNull
   public final FocusModeWidget widgetFocusMode;
 
   @NonNull
@@ -87,9 +82,6 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
 
   @NonNull
   public final LensControlWidget widgetLensControl;
-
-  @NonNull
-  public final MapWidget widgetMap;
 
   @NonNull
   public final SystemStatusListPanelWidget widgetPanelSystemStatusList;
@@ -119,12 +111,11 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
       @NonNull GimbalFineTuneWidget settingMenuGimbalFineTune,
       @NonNull AutoExposureLockWidget widgetAutoExposureLock,
       @NonNull CameraControlsWidget widgetCameraControls, @NonNull FocalZoomWidget widgetFocalZoom,
-      @NonNull FocusExposureSwitchWidget widgetFocusExposureSwitch,
       @NonNull FocusModeWidget widgetFocusMode,
       @NonNull PrimaryFlightDisplayWidget widgetFpvFlightDisplayWidget,
       @NonNull FPVInteractionWidget widgetFpvInteraction,
       @NonNull HorizontalSituationIndicatorWidget widgetHorizontalSituationIndicator,
-      @NonNull LensControlWidget widgetLensControl, @NonNull MapWidget widgetMap,
+      @NonNull LensControlWidget widgetLensControl,
       @NonNull SystemStatusListPanelWidget widgetPanelSystemStatusList,
       @NonNull FPVWidget widgetPrimaryFpv,
       @NonNull RemainingFlightTimeWidget widgetRemainingFlightTime,
@@ -142,13 +133,11 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
     this.widgetAutoExposureLock = widgetAutoExposureLock;
     this.widgetCameraControls = widgetCameraControls;
     this.widgetFocalZoom = widgetFocalZoom;
-    this.widgetFocusExposureSwitch = widgetFocusExposureSwitch;
     this.widgetFocusMode = widgetFocusMode;
     this.widgetFpvFlightDisplayWidget = widgetFpvFlightDisplayWidget;
     this.widgetFpvInteraction = widgetFpvInteraction;
     this.widgetHorizontalSituationIndicator = widgetHorizontalSituationIndicator;
     this.widgetLensControl = widgetLensControl;
-    this.widgetMap = widgetMap;
     this.widgetPanelSystemStatusList = widgetPanelSystemStatusList;
     this.widgetPrimaryFpv = widgetPrimaryFpv;
     this.widgetRemainingFlightTime = widgetRemainingFlightTime;
@@ -241,12 +230,6 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.widget_focus_exposure_switch;
-      FocusExposureSwitchWidget widgetFocusExposureSwitch = ViewBindings.findChildViewById(rootView, id);
-      if (widgetFocusExposureSwitch == null) {
-        break missingId;
-      }
-
       id = R.id.widget_focus_mode;
       FocusModeWidget widgetFocusMode = ViewBindings.findChildViewById(rootView, id);
       if (widgetFocusMode == null) {
@@ -274,12 +257,6 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
       id = R.id.widget_lens_control;
       LensControlWidget widgetLensControl = ViewBindings.findChildViewById(rootView, id);
       if (widgetLensControl == null) {
-        break missingId;
-      }
-
-      id = R.id.widget_map;
-      MapWidget widgetMap = ViewBindings.findChildViewById(rootView, id);
-      if (widgetMap == null) {
         break missingId;
       }
 
@@ -328,10 +305,10 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
       return new UxsdkActivityDefaultLayoutBinding((DrawerLayout) rootView, fpvHolder,
           manualRightNavSetting, panelNdviCamera, panelTopBar, panelVisualCamera, rootView_,
           settingMenuGimbalFineTune, widgetAutoExposureLock, widgetCameraControls, widgetFocalZoom,
-          widgetFocusExposureSwitch, widgetFocusMode, widgetFpvFlightDisplayWidget,
-          widgetFpvInteraction, widgetHorizontalSituationIndicator, widgetLensControl, widgetMap,
-          widgetPanelSystemStatusList, widgetPrimaryFpv, widgetRemainingFlightTime,
-          widgetReturnToHome, widgetSecondaryFpv, widgetSimulatorControl, widgetTakeOff);
+          widgetFocusMode, widgetFpvFlightDisplayWidget, widgetFpvInteraction,
+          widgetHorizontalSituationIndicator, widgetLensControl, widgetPanelSystemStatusList,
+          widgetPrimaryFpv, widgetRemainingFlightTime, widgetReturnToHome, widgetSecondaryFpv,
+          widgetSimulatorControl, widgetTakeOff);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

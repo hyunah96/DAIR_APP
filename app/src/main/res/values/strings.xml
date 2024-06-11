@@ -125,7 +125,8 @@
     <string name="app_factory_name" ns1:override="true">DJI Pilot PE</string>
     <string name="app_iknow">확인</string>
     <string name="app_isee">확인</string>
-    <string name="app_name" ns1:override="true">DAIR</string>
+<!--    <string name="app_name" ns1:override="true">DAIR</string>-->
+    <string name="app_name">DAIR</string>
     <string name="app_network_error">네트워크 사용 불가. 네트워크 연결을 확인하세요</string>
     <string name="app_no_app_for_intent">이 기기에는 관련 앱이 없습니다</string>
     <string name="app_not_login">로그인 안 됨</string>

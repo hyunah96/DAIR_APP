@@ -6,7 +6,6 @@ import dji.v5.ux.core.util.UxSharedPreferencesUtil
 import dji.v5.ux.sample.showcase.defaultlayout.DefaultLayoutActivity
 import android.util.Log
 
-
 //MAIN [1]
 //DJIMainActivity 클래스를 상속받는 하위 클래스 DJIAircraftMainActivity
 class DJIAircraftMainActivity : DJIMainActivity() {
@@ -22,12 +21,7 @@ class DJIAircraftMainActivity : DJIMainActivity() {
         // 지오이드(해수면 기준으로 측정된 지표) 관리자 초기화
         GeoidManager.getInstance().init(this)
 
-        try {
         enableDefaultLayout(DefaultLayoutActivity::class.java)
-        }
-        catch (e:Exception){
-            Log.d("test","error $e")
-        }
         //enableDefaultLayout(DefaultLayoutActivity::class.java)
         //enableWidgetList(WidgetsActivity::class.java)
     }

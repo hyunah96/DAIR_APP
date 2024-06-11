@@ -46,7 +46,7 @@ import dji.v5.ux.core.communication.ObservableInMemoryKeyedStore;
 import dji.v5.ux.core.util.RxUtil;
 
 /**
- * Widget can be used to switch between shoot photo mode and record video mode
+ * PhotoVideoSwitchWidget 위젯을 사용하여 사진 촬영 모드와 동영상 녹화 모드를 전환할 수 있다.
  */
 public class PhotoVideoSwitchWidget extends FrameLayoutWidget<Object> implements View.OnClickListener, ICameraIndex {
 
@@ -74,7 +74,9 @@ public class PhotoVideoSwitchWidget extends FrameLayoutWidget<Object> implements
 
     @Override
     protected void initView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        Log.d("test","PhotoVideoSwitchWidget initView");
         inflate(context, R.layout.uxsdk_widget_photo_video_switch, this);
+        //카메라 전환 버튼
         foregroundImageView = findViewById(R.id.image_view_foreground);
         if (!isInEditMode()) {
             widgetModel = new PhotoVideoSwitchWidgetModel(DJISDKModel.getInstance(), ObservableInMemoryKeyedStore.getInstance());
@@ -140,6 +142,7 @@ public class PhotoVideoSwitchWidget extends FrameLayoutWidget<Object> implements
 
     @Override
     public void onClick(View v) {
+        Log.d("test","onClick");
         widgetModel.toggleCameraMode()
                 .observeOn(SchedulerProvider.ui())
                 .subscribe(

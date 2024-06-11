@@ -3250,7 +3250,6 @@ id widget_fpv_flight_display_widget
 id widget_fpv_interaction
 id widget_horizontal_situation_indicator
 id widget_lens_control
-id widget_map
 id widget_ndvi_stream_palette_bar
 id widget_ndvi_stream_selector
 id widget_panel_system_status_list

@@ -28,6 +28,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import androidx.annotation.StyleRes
 import androidx.core.content.res.use
 import dji.sdk.keyvalue.value.camera.CameraSDCardState
@@ -97,8 +98,9 @@ open class SDCardStatusListItemWidget @JvmOverloads constructor(
     }
     //endregion
 
-    //region Lifecycle
+    //sd카드 상태 감지, 기체 연결 상태 감지
     override fun reactToModelChanges() {
+        Log.d("test","SDCard reactToModelChanges")
         addReaction(widgetModel.sdCardState
                 .observeOn(SchedulerProvider.ui())
                 .subscribe { this.updateUI(it) })
@@ -146,12 +148,14 @@ open class SDCardStatusListItemWidget @JvmOverloads constructor(
 
     //region Reactions to model
     private fun updateUI(sdCardState: SDCardStatusListItemWidgetModel.SDCardState) {
+        Log.d("test","SDCard updateUI")
         widgetStateDataProcessor.onNext(ModelState.SDCardStateUpdated(sdCardState))
         when (sdCardState) {
             SDCardStatusListItemWidgetModel.SDCardState.ProductDisconnected -> {
                 listItemLabel = getString(R.string.uxsdk_string_default_value)
                 listItemLabelTextColor = disconnectedValueColor
                 isEnabled = false
+                Log.d("test","sdCardState disconnect")
             }
             is SDCardStatusListItemWidgetModel.SDCardState.CurrentSDCardState -> {
                 isEnabled = true
@@ -159,6 +163,7 @@ open class SDCardStatusListItemWidget @JvmOverloads constructor(
                         sdCardState.remainingSpace)
                 listItemLabelTextColor = getSDCardMessageColor(sdCardState.sdCardOperationState)
                 listItemButtonEnabled = getFormatButtonVisibility(sdCardState.sdCardOperationState)
+                Log.d("test","sdCardState disconnect")
             }
         }
     }

@@ -41,9 +41,9 @@ public class CameraSDVideoStorageState extends CameraVideoStorageState {
     }
 
     /**
-     * Get the operation state of current storage
-     *
-     * @return instance of {@link SSDOperationState} representing state for SDCard or internal Storage
+     * * 현재 스토리지의 작동 상태 확인
+     * *
+     * * SDCard 또는 내부 스토리지의 상태를 나타내는 {@link SSDOperationState} 인스턴스를 반환합니다.
      */
     public CameraSDCardState getSdCardOperationState() {
         return sdCardOperationState;

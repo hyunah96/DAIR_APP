@@ -3248,7 +3248,6 @@ int id widget_fpv_flight_display_widget 0x0
 int id widget_fpv_interaction 0x0
 int id widget_horizontal_situation_indicator 0x0
 int id widget_lens_control 0x0
-int id widget_map 0x0
 int id widget_ndvi_stream_palette_bar 0x0
 int id widget_ndvi_stream_selector 0x0
 int id widget_panel_system_status_list 0x0

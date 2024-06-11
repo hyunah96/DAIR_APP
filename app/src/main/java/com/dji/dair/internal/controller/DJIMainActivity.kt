@@ -17,6 +17,7 @@ import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
 import com.dji.dair.internal.models.globalViewModels
 import dji.v5.utils.common.PermissionUtil
+import dji.sdk.keyvalue.value.camera.CameraStorageInfo
 
 
 abstract class DJIMainActivity: AppCompatActivity() {
@@ -50,6 +51,7 @@ abstract class DJIMainActivity: AppCompatActivity() {
     private val msdkInfoVm: MSDKInfoVm by viewModels()
     private val msdkManagerVM : MSDKManagerVM by globalViewModels()
     private val handler: Handler = Handler(Looper.getMainLooper())
+    //private val CameraStorageInfo sdCardInfo;
 
 
     //추상 메서드 선언 , 하위 클래스인 DJIAircraftMainActivity 에서 구현
@@ -85,6 +87,7 @@ abstract class DJIMainActivity: AppCompatActivity() {
         }
         observeSDKMananer()
         checkPermissionAndRequest()
+        SDCardState()
     }
 
 
@@ -155,6 +158,10 @@ abstract class DJIMainActivity: AppCompatActivity() {
                 Log.d("test","observeSDKMananer false")
             }
         }
+    }
+
+    private fun SDCardState() {
+        Log.d("test","DJIMainActivity SDCardState")
     }
     private fun checkPermissionAndRequest() {
         if(!checkPermission()) {

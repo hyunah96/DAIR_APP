@@ -25,6 +25,7 @@ package dji.v5.ux.cameracore.widget.cameracapture;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -77,7 +78,9 @@ public class CameraCaptureWidget extends ConstraintLayoutWidget<Object> implemen
 
     @Override
     protected void initView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        Log.d("test","CameraCaptureWidget initView");
         widgetMap = new HashMap<>();
+        //현재 편집 모드가 아니면
         if (!isInEditMode()) {
             addViewByMode(CameraMode.PHOTO_NORMAL, new ShootPhotoWidget(context));
             addViewByMode(CameraMode.VIDEO_NORMAL, new RecordVideoWidget(context));
@@ -101,8 +104,13 @@ public class CameraCaptureWidget extends ConstraintLayoutWidget<Object> implemen
         super.onDetachedFromWindow();
     }
 
+    //카메라 모드가 변경되는지 감시하는 메서드\\
+    //observeOn 메서드를 사용하여 widgetModel.getCameraMode() 부분을 감시하고
+    //변경되면 SchedulerProvider.ui()을 통해
+    //UI 스레드로 변경사항을 전달하고 onCameraModeChange를 호출
     @Override
     protected void reactToModelChanges() {
+        Log.d("test","CameraCaptureWidget reactToModelChanges");
         addReaction(
                 widgetModel.getCameraMode()
                         .observeOn(SchedulerProvider.ui())
@@ -144,12 +152,17 @@ public class CameraCaptureWidget extends ConstraintLayoutWidget<Object> implemen
 
     //region private helpers
     private void onCameraModeChange(CameraMode cameraMode) {
+        Log.d("test","onCameraModeChange");
         for (View view : widgetMap.values()) {
+            //촬영 버튼 비활성화
             if (view != null) view.setVisibility(INVISIBLE);
+            Log.d("test","INVISIBLE");
         }
         View currentView = widgetMap.get(cameraMode);
         if (currentView != null) {
+            //촬영 버튼 활성화
             widgetMap.get(cameraMode).setVisibility(VISIBLE);
+            Log.d("test","VISIBLE");
         }
     }
     //endregion

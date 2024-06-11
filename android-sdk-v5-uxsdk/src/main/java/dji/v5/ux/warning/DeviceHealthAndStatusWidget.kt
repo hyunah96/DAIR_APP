@@ -51,6 +51,8 @@ open class DeviceHealthAndStatusWidget @JvmOverloads constructor(
     }
 
     override fun initView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) {
+        Log.d("test","DeviceHealthAndStatusWidget initView")
+
         binding = UxsdkFpvTopBarWidgetWarningMessageBinding.inflate(LayoutInflater.from(context),this,true)
         inflate(context, R.layout.uxsdk_fpv_top_bar_widget_warning_message, this)
 
@@ -100,6 +102,7 @@ open class DeviceHealthAndStatusWidget @JvmOverloads constructor(
         }
     }
 
+    //변화 감지
     override fun reactToModelChanges() {
         addReaction(widgetModel.deviceMessageProcessor.toFlowable()
             .observeOn(SchedulerProvider.ui())
@@ -126,6 +129,7 @@ open class DeviceHealthAndStatusWidget @JvmOverloads constructor(
             if (it.isNotEmpty()) {
                 tvWarningMessage.text = it[0].validDescription()
                 cardViewWarningWrapper.setBackgroundColor(AndUtil.getResColor(colorResId(it[0].warningLevel)))
+                Log.d("test","tvWarningMessage.text : ${tvWarningMessage.text}")
                 tvNoMessage.visibility = GONE
                 tvWarningMessage.visibility = VISIBLE
                 popover?.builder?.anchor = this
@@ -142,6 +146,7 @@ open class DeviceHealthAndStatusWidget @JvmOverloads constructor(
                     tvNoMessage.text = "N/A"
                 } else {
                     tvNoMessage.text = AndUtil.getResString(R.string.uxsdk_fpv_message_box_empty_content_v2)
+                    Log.d("test","it is Empty tvNoMessage.text : ${tvNoMessage.text}")
                 }
                 popover?.let { p ->
                     p.builder.anchor = tvNoMessage
@@ -175,15 +180,19 @@ open class DeviceHealthAndStatusWidget @JvmOverloads constructor(
         val level2Count = widgetModel.level2Count()
 
         if (level2Count == 0) {
+            Log.d("test","level2Count == 0")
             tvLevel2Count.visibility = GONE
         } else {
+            Log.d("test","level2Count != 0")
             tvLevel2Count.visibility = VISIBLE
             tvLevel2Count.text = level2Count.toString()
         }
 
         if (level3Count == 0) {
+            Log.d("test","level3Count == 0")
             tvLevel3Count.visibility = GONE
         } else {
+            Log.d("test","level3Count != 0")
             tvLevel3Count.visibility = VISIBLE
             tvLevel3Count.text = level3Count.toString()
         }

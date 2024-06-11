@@ -27,6 +27,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import android.util.Pair
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -142,6 +143,7 @@ open class SystemStatusWidget @JvmOverloads constructor(
 
     //region Constructor
     override fun initView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) {
+        Log.d("test","SystemStatusWidget initView")
         inflate(context, R.layout.uxsdk_widget_system_status, this)
     }
 
@@ -166,6 +168,7 @@ open class SystemStatusWidget @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
+    //상태 메시지,경고 메시지,기체 연결 변화 구독
     override fun reactToModelChanges() {
         addReaction(widgetModel.systemStatus
             .observeOn(SchedulerProvider.ui())
@@ -184,6 +187,7 @@ open class SystemStatusWidget @JvmOverloads constructor(
     //region Reactions to model
     private fun updateUI(status: DJIDeviceStatus) {
         systemStatusTextView.textColor = getSystemStatusMessageTextColor(status.warningLevel())
+        Log.d("test","systemStatusTextView.textColor : ${systemStatusTextView.textColor}")
         systemStatusBackgroundImageView.imageDrawable = getSystemStatusBackgroundDrawable(status.warningLevel())
         blinkBackground(status.warningLevel() == WarningLevel.SERIOUS_WARNING)
         widgetStateDataProcessor.onNext(SystemStatusUpdated(status))
@@ -192,12 +196,16 @@ open class SystemStatusWidget @JvmOverloads constructor(
     private fun updateMessage(messageData: SystemStatusWidgetModel.WarningStatusMessageData) {
         systemStatusTextView.text =
             if (isMaxHeightMessage(messageData.message)) {
+                Log.d("test","systemStatusTextView.text : ${messageData.message}")
                 messageData.message + " - " + formatMaxHeight(messageData.maxHeight, messageData.unitType)
-            } else {
+            }
+            else {
+                Log.d("test","systemStatusTextView.text else : ${messageData.message}")
                 messageData.message
             }
     }
 
+    //No Fly Zone의 최대 높이 제한에 도달했을 때 수행되는 메서드
     private fun isMaxHeightMessage(text: String?): Boolean {
         return DJIDeviceStatus.IN_NFZ_MAX_HEIGHT.statusCode().equals(text)
     }

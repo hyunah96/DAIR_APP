@@ -25,6 +25,7 @@ package dji.v5.ux.cameracore.widget.cameracontrols;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,7 +46,9 @@ import dji.v5.ux.core.base.widget.ConstraintLayoutWidget;
  * <p>
  * The widget gives access to all the child widgets.
  */
+//ConstraintLayoutWidget<Object>를 상속받고 ICameraIndex 인터페이스를 구현
 public class CameraControlsWidget extends ConstraintLayoutWidget<Object> implements ICameraIndex {
+
 
     //region Fields
     private CameraSettingsMenuIndicatorWidget cameraSettingsMenuIndicatorWidget;
@@ -67,16 +70,23 @@ public class CameraControlsWidget extends ConstraintLayoutWidget<Object> impleme
         super(context, attrs, defStyleAttr);
     }
 
+    //초기화 메서드
     @Override
     protected void initView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        Log.d("test","CameraControlsWidget initView");
+        //inflate 각기 다른 화면들을 한 화면에 띄우고 싶은 경우 사용 (또다른 layout을 추가로 보여주고 싶을 때 사용하는 함수)
         inflate(context, R.layout.uxsdk_widget_camera_controls, this);
+        //setBackgroundResource 배경 설정
         setBackgroundResource(R.drawable.uxsdk_background_black_rectangle);
+        //메서드 초기화
         cameraCaptureWidget = findViewById(R.id.widget_camera_control_camera_capture);
+        //사진,영상 변환 스위치
         photoVideoSwitchWidget = findViewById(R.id.widget_camera_control_photo_video_switch);
         exposureSettingsIndicatorWidget = findViewById(R.id.widget_camera_control_camera_exposure_settings);
         cameraSettingsMenuIndicatorWidget = findViewById(R.id.widget_camera_control_camera_settings_menu);
     }
 
+    //모델이 변화했을 때 반응할 메서드
     @Override
     protected void reactToModelChanges() {
         //Do Nothing
@@ -88,20 +98,27 @@ public class CameraControlsWidget extends ConstraintLayoutWidget<Object> impleme
         return getResources().getString(R.string.uxsdk_widget_camera_controls_ratio);
     }
 
+    //카메라 인덱스 반환 (변화 감지는 x)
     @NonNull
     @Override
     public ComponentIndexType getCameraIndex() {
+        Log.d("test","ComponentIndexType");
         return cameraCaptureWidget.getCameraIndex();
+
     }
 
+    //렌즈 타입 반환 (변화 감지는 x)
     @NonNull
     @Override
     public CameraLensType getLensType() {
+        Log.d("test","CameraLensType");
         return cameraCaptureWidget.getLensType();
     }
 
+    //업데이트
     @Override
     public void updateCameraSource(@NonNull ComponentIndexType cameraIndex, @NonNull CameraLensType lensType) {
+        Log.d("test","CameraControlsWidget updateCameraSource");
         cameraCaptureWidget.updateCameraSource(cameraIndex, lensType);
         photoVideoSwitchWidget.updateCameraSource(cameraIndex, lensType);
         exposureSettingsIndicatorWidget.updateCameraSource(cameraIndex, lensType);
@@ -112,6 +129,7 @@ public class CameraControlsWidget extends ConstraintLayoutWidget<Object> impleme
      *
      * @return {@link CameraCaptureWidget}
      */
+    //카메라 캡쳐 반환
     @NonNull
     public CameraCaptureWidget getCameraCaptureWidget() {
         return cameraCaptureWidget;
@@ -122,6 +140,7 @@ public class CameraControlsWidget extends ConstraintLayoutWidget<Object> impleme
      *
      * @return {@link CameraSettingsMenuIndicatorWidget}
      */
+    //MENU 위젯
     @NonNull
     public CameraSettingsMenuIndicatorWidget getCameraSettingsMenuIndicatorWidget() {
         return cameraSettingsMenuIndicatorWidget;
@@ -132,6 +151,7 @@ public class CameraControlsWidget extends ConstraintLayoutWidget<Object> impleme
      *
      * @return {@link ExposureSettingsIndicatorWidget}
      */
+    //카메라 셋팅 위젯
     @NonNull
     public ExposureSettingsIndicatorWidget getExposureSettingsIndicatorWidget() {
         return exposureSettingsIndicatorWidget;
@@ -142,6 +162,7 @@ public class CameraControlsWidget extends ConstraintLayoutWidget<Object> impleme
      *
      * @return {@link PhotoVideoSwitchWidget}
      */
+    //사진,비디오 촬영 전환 위젯
     @NonNull
     public PhotoVideoSwitchWidget getPhotoVideoSwitchWidget() {
         return photoVideoSwitchWidget;

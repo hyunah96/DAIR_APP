@@ -82,6 +82,7 @@
                 app:uxsdk_videoChannelType="secondaryStreamChannel" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!--상단바 (기체 모드, 시스템 상태, 시뮬레이션 , 배터리 , 신호 등-->
         <dji.v5.ux.core.panel.topbar.TopBarPanelWidget
             android:id="@+id/panel_top_bar"
             android:layout_width="0dp"
@@ -96,6 +97,7 @@
             app:uxsdk_itemsMarginRight="@dimen/uxsdk_spacing_normal"
             app:uxsdk_itemsSpacing="14dp" />
 
+        <!--남은 비행 시간 (상단)-->
         <dji.v5.ux.core.widget.remainingflighttime.RemainingFlightTimeWidget
             android:id="@+id/widget_remaining_flight_time"
             android:layout_width="match_parent"
@@ -147,6 +149,7 @@
             app:layout_constraintEnd_toStartOf="@+id/widget_auto_exposure_lock"
             app:layout_constraintTop_toTopOf="@+id/widget_focus_exposure_switch" />
 
+        <!--EV-->
         <dji.v5.ux.cameracore.widget.autoexposurelock.AutoExposureLockWidget
             android:id="@+id/widget_auto_exposure_lock"
             android:layout_width="@dimen/uxsdk_camera_bar_height"
@@ -169,15 +172,16 @@
             app:layout_constraintTop_toTopOf="@+id/widget_focus_exposure_switch"
             tools:ignore="TouchTargetSizeCheck" />
 
-        <dji.v5.ux.cameracore.widget.focusexposureswitch.FocusExposureSwitchWidget
-            android:id="@+id/widget_focus_exposure_switch"
-            android:layout_width="@dimen/uxsdk_camera_bar_height"
-            android:layout_height="@dimen/uxsdk_camera_bar_height"
-            android:layout_marginEnd="8dp"
-            android:padding="@dimen/uxsdk_camera_bar_padding"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/widget_remaining_flight_time"
-            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+        <!--카메라 정보 ISO, SHUTTER,F ,EV ,WB -->
+<!--        <dji.v5.ux.cameracore.widget.focusexposureswitch.FocusExposureSwitchWidget-->
+<!--            android:id="@+id/widget_focus_exposure_switch"-->
+<!--            android:layout_width="@dimen/uxsdk_camera_bar_height"-->
+<!--            android:layout_height="@dimen/uxsdk_camera_bar_height"-->
+<!--            android:layout_marginEnd="8dp"-->
+<!--            android:padding="@dimen/uxsdk_camera_bar_padding"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/widget_remaining_flight_time"-->
+<!--            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />-->
 
         <dji.v5.ux.cameracore.widget.cameracontrols.CameraControlsWidget
             android:id="@+id/widget_camera_controls"
@@ -200,6 +204,7 @@
             app:layout_constraintTop_toBottomOf="@+id/widget_focus_exposure_switch"
             app:layout_constraintVertical_bias="0.05" />
 
+        <!--이륙-->
         <dji.v5.ux.flight.takeoff.TakeOffWidget
             android:id="@+id/widget_take_off"
             android:layout_width="0dp"
@@ -226,6 +231,7 @@
             app:layout_constraintStart_toEndOf="@id/widget_take_off"
             app:layout_constraintTop_toBottomOf="@id/widget_remaining_flight_time" />
 
+        <!--리턴 투 홈-->
         <dji.v5.ux.flight.returnhome.ReturnHomeWidget
             android:id="@+id/widget_return_to_home"
             android:layout_width="0dp"
@@ -263,15 +269,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <dji.v5.ux.map.MapWidget
-            android:id="@+id/widget_map"
-            android:layout_width="@dimen/uxsdk_150_dp"
-            android:layout_height="@dimen/uxsdk_100_dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="12dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:uxsdk_djiMap_mapType="normal" />
+        <!--지도-->
+<!--        <dji.v5.ux.map.MapWidget-->
+<!--            android:id="@+id/widget_map"-->
+<!--            android:layout_width="@dimen/uxsdk_150_dp"-->
+<!--            android:layout_height="@dimen/uxsdk_100_dp"-->
+<!--            android:layout_marginEnd="12dp"-->
+<!--            android:layout_marginBottom="12dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:uxsdk_djiMap_mapType="normal" />-->
 
         <dji.v5.ux.core.panel.systemstatus.SystemStatusListPanelWidget
             android:id="@+id/widget_panel_system_status_list"

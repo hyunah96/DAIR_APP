@@ -48,6 +48,8 @@ import dji.v5.common.video.interfaces.VideoChannelStateChangeListener;
 import dji.v5.common.video.stream.PhysicalDevicePosition;
 import dji.v5.common.video.stream.StreamSource;
 import dji.v5.manager.datacenter.MediaDataCenter;
+import dji.v5.manager.datacenter.media.MediaFileListState;
+import dji.v5.manager.datacenter.media.MediaManager;
 import dji.v5.network.DJINetworkManager;
 import dji.v5.network.IDJINetworkStatusListener;
 import dji.v5.utils.common.JsonUtil;
@@ -100,6 +102,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     //region Fields
     private final String TAG = LogUtils.getTag(this);
 
+
     protected FPVWidget primaryFpvWidget;
     protected FPVInteractionWidget fpvInteractionWidget;
     protected FPVWidget secondaryFPVWidget;
@@ -117,6 +120,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     protected FocalZoomWidget focalZoomWidget;
     protected SettingWidget settingWidget;
     protected MapWidget mapWidget;
+    //상단바(기체 모드, 시스템 상태, 시뮬레이션 , 배터리 , 신호 등)
     protected TopBarPanelWidget topBarPanel;
     protected ConstraintLayout fpvParentView;
     private DrawerLayout mDrawerLayout;
@@ -164,14 +168,14 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         visualCameraPanel = findViewById(R.id.panel_visual_camera);
         autoExposureLockWidget = findViewById(R.id.widget_auto_exposure_lock);
         focusModeWidget = findViewById(R.id.widget_focus_mode);
-        focusExposureSwitchWidget = findViewById(R.id.widget_focus_exposure_switch);
+        //focusExposureSwitchWidget = findViewById(R.id.widget_focus_exposure_switch);
         pfvFlightDisplayWidget = findViewById(R.id.widget_fpv_flight_display_widget);
         focalZoomWidget = findViewById(R.id.widget_focal_zoom);
         cameraControlsWidget = findViewById(R.id.widget_camera_controls);
         horizontalSituationIndicatorWidget = findViewById(R.id.widget_horizontal_situation_indicator);
         gimbalAdjustDone = findViewById(R.id.fpv_gimbal_ok_btn);
         gimbalFineTuneWidget = findViewById(R.id.setting_menu_gimbal_fine_tune);
-        mapWidget = findViewById(R.id.widget_map);
+        //mapWidget = findViewById(R.id.widget_map);
 
         initClickListener();
 
@@ -199,21 +203,21 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         secondaryFPVWidget.setSurfaceViewZOrderOnTop(true);
         secondaryFPVWidget.setSurfaceViewZOrderMediaOverlay(true);
 
-        try{
-        mapWidget.initAMap(map -> {
-            // map.setOnMapClickListener(latLng -> onViewClick(mapWidget));
-            DJIUiSettings uiSetting = map.getUiSettings();
-            if (uiSetting != null) {
-                Log.d("test","initAMap is not null");
-                uiSetting.setZoomControlsEnabled(false);//hide zoom widget
-            }
-            });
-        }
-        catch (Exception e) {
-            Log.d("test", "error",e);
-        }
-        mapWidget.onCreate(savedInstanceState);
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+//        try{
+//        mapWidget.initAMap(map -> {
+//            // map.setOnMapClickListener(latLng -> onViewClick(mapWidget));
+//            DJIUiSettings uiSetting = map.getUiSettings();
+//            if (uiSetting != null) {
+//                Log.d("test","initAMap is not null");
+//                uiSetting.setZoomControlsEnabled(false);//hide zoom widget
+//            }
+//            });
+//        }
+//        catch (Exception e) {
+//            Log.d("test", "error",e);
+//        }
+//        mapWidget.onCreate(savedInstanceState);
+//        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 
         //实现RTK监测网络，并自动重连机制
         DJINetworkManager.getInstance().addNetworkStatusListener(networkStatusListener);
@@ -265,7 +269,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mapWidget.onDestroy();
+        //mapWidget.onDestroy();
         MediaDataCenter.getInstance().getVideoStreamManager().clearAllStreamSourcesListeners();
         removeChannelStateListener();
         DJINetworkManager.getInstance().removeNetworkStatusListener(networkStatusListener);
@@ -276,7 +280,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d("test","DefaultLayoutActivity onResume");
-        mapWidget.onResume();
+        //mapWidget.onResume();
         compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(systemStatusListPanelWidget.closeButtonPressed()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -319,7 +323,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
             compositeDisposable.dispose();
             compositeDisposable = null;
         }
-        mapWidget.onPause();
+        //mapWidget.onPause();
         super.onPause();
         ViewUtil.setKeepScreen(this, false);
     }
@@ -426,9 +430,9 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         if (focusModeWidget.getVisibility() == View.VISIBLE) {
             focusModeWidget.updateCameraSource(cameraIndex, lensType);
         }
-        if (focusExposureSwitchWidget.getVisibility() == View.VISIBLE) {
-            focusExposureSwitchWidget.updateCameraSource(cameraIndex, lensType);
-        }
+//        if (focusExposureSwitchWidget.getVisibility() == View.VISIBLE) {
+//            focusExposureSwitchWidget.updateCameraSource(cameraIndex, lensType);
+//        }
         if (cameraControlsWidget.getVisibility() == View.VISIBLE) {
             cameraControlsWidget.updateCameraSource(cameraIndex, lensType);
         }
@@ -450,7 +454,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         visualCameraPanel.setVisibility(devicePosition == PhysicalDevicePosition.NOSE ? View.INVISIBLE : View.VISIBLE);
         autoExposureLockWidget.setVisibility(devicePosition == PhysicalDevicePosition.NOSE ? View.INVISIBLE : View.VISIBLE);
         focusModeWidget.setVisibility(devicePosition == PhysicalDevicePosition.NOSE ? View.INVISIBLE : View.VISIBLE);
-        focusExposureSwitchWidget.setVisibility(devicePosition == PhysicalDevicePosition.NOSE ? View.INVISIBLE : View.VISIBLE);
+        //focusExposureSwitchWidget.setVisibility(devicePosition == PhysicalDevicePosition.NOSE ? View.INVISIBLE : View.VISIBLE);
         cameraControlsWidget.setVisibility(devicePosition == PhysicalDevicePosition.NOSE ? View.INVISIBLE : View.VISIBLE);
         focalZoomWidget.setVisibility(devicePosition == PhysicalDevicePosition.NOSE ? View.INVISIBLE : View.VISIBLE);
         horizontalSituationIndicatorWidget.setSimpleModeEnable(devicePosition != PhysicalDevicePosition.NOSE);

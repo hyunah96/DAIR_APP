@@ -77,6 +77,7 @@ class FpvWarningMessagePopoverView @JvmOverloads constructor(
                 val textResId = if (it) {
                     R.string.uxsdk_fpv_message_box_empty_content_v2
                 } else {
+                    Log.d("test","기체 연결 끊김")
                     R.string.uxsdk_fpv_tip_remote_disconnect
                 }
                 newList.add(0, NoWarning(textResId))

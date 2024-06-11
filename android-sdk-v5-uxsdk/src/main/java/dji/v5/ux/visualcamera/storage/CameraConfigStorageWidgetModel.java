@@ -23,6 +23,8 @@
 
 package dji.v5.ux.visualcamera.storage;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -159,6 +161,8 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     //region LifeCycle
     @Override
     protected void inSetup() {
+        Log.d("test","CameraConfigStorageWidgetModel setup");
+        //저장소 변경 감지
         bindDataProcessor(KeyTools.createKey(CameraKey.KeyCameraStorageInfos, cameraIndex), storageInfosProcessor, cameraStorageInfos -> {
             storageLocationProcessor.onNext(cameraStorageInfos.getCurrentStorageType());
 
@@ -172,10 +176,20 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
 
             CameraStorageInfo sdcardInfo = cameraStorageInfos.getCameraStorageInfoByLocation(CameraStorageLocation.SDCARD);
             if (sdcardInfo != null) {
+                //onNext란? 구독자(subscriber)에게 해당 아이템을 전달하는데 사용됨
+                Log.d("test","sdcardInfo != null");
+                //sd카드 상태
                 sdCardState.onNext(sdcardInfo.getStorageState());
+                //sd카드 남은 저장공간
                 availableCapacity.onNext(sdcardInfo.getStorageLeftCapacity());
+                //sd카드에 저장가능한 사진의 수
                 sdAvailableCaptureCount.onNext(sdcardInfo.getAvailablePhotoCount());
+                //sd카드에 저장가능한 비디오 녹화 시간
                 sdCardRecordingTime.onNext(sdcardInfo.getAvailableVideoDuration());
+                Log.d("test","sd카드 상태 :" + sdcardInfo.getStorageState() + "sd카드 남은 저장공간 : " +sdcardInfo.getStorageLeftCapacity());
+            }
+            else {
+                Log.d("test","sdcardInfo is null");
             }
         });
         bindDataProcessor(KeyTools.createCameraKey(CameraKey.KeyVideoResolutionFrameRate, cameraIndex, lensType), resolutionAndFrameRateProcessor);
@@ -209,6 +223,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
         switch (currentStorageLocation) {
             case SDCARD:
                 if (!SDCardLoadState.UNKNOWN.equals(sdCardState.getValue())) {
+                    Log.d("test","!SDCardLoadState UNKNOWN");
                     sdCardOperationState = sdCardState.getValue();
                 }
                 break;

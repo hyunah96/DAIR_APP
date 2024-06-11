@@ -106,6 +106,7 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
 
     @Override
     protected void initView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        Log.d("test","ShootPhotoWidget initView");
         inflate(context, R.layout.uxsdk_widget_shoot_photo, this);
         borderProgressRingView = findViewById(R.id.progress_ring_view_border);
         centerImageView = findViewById(R.id.image_view_center);

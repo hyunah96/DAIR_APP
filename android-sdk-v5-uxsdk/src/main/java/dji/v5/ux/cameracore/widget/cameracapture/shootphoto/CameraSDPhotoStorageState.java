@@ -27,8 +27,8 @@ import dji.sdk.keyvalue.value.camera.CameraStorageLocation;
 import dji.sdk.keyvalue.value.camera.SDCardLoadState;
 
 /**
- *  Class represents storage state for SD card and internal storage
- *  when camera is in shoot photo mode
+ * CameraSDPhotoStorageState 클래스는 SD 카드 및 내부 저장소의 저장소 상태를 나타냅니다.
+ * 카메라가 사진 촬영 모드일 때
  *
  */
 public class CameraSDPhotoStorageState extends CameraPhotoStorageState {
