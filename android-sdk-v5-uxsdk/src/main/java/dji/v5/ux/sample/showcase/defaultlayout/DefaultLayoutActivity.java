@@ -23,8 +23,6 @@
 
 package dji.v5.ux.sample.showcase.defaultlayout;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +37,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import dji.sdk.keyvalue.key.CameraKey;
+import dji.sdk.keyvalue.key.KeyTools;
+import dji.sdk.keyvalue.value.camera.SDCardLoadState;
 import dji.sdk.keyvalue.value.common.CameraLensType;
 import dji.sdk.keyvalue.value.common.ComponentIndexType;
 import dji.v5.common.video.channel.VideoChannelState;
@@ -48,8 +49,6 @@ import dji.v5.common.video.interfaces.VideoChannelStateChangeListener;
 import dji.v5.common.video.stream.PhysicalDevicePosition;
 import dji.v5.common.video.stream.StreamSource;
 import dji.v5.manager.datacenter.MediaDataCenter;
-import dji.v5.manager.datacenter.media.MediaFileListState;
-import dji.v5.manager.datacenter.media.MediaManager;
 import dji.v5.network.DJINetworkManager;
 import dji.v5.network.IDJINetworkStatusListener;
 import dji.v5.utils.common.JsonUtil;
@@ -58,11 +57,12 @@ import dji.v5.ux.R;
 import dji.v5.ux.accessory.RTKStartServiceHelper;
 import dji.v5.ux.cameracore.widget.autoexposurelock.AutoExposureLockWidget;
 import dji.v5.ux.cameracore.widget.cameracontrols.CameraControlsWidget;
-import dji.v5.ux.cameracore.widget.cameracontrols.exposuresettings.ExposureSettingsPanel;
 import dji.v5.ux.cameracore.widget.cameracontrols.lenscontrol.LensControlWidget;
 import dji.v5.ux.cameracore.widget.focusexposureswitch.FocusExposureSwitchWidget;
 import dji.v5.ux.cameracore.widget.focusmode.FocusModeWidget;
 import dji.v5.ux.cameracore.widget.fpvinteraction.FPVInteractionWidget;
+import dji.v5.ux.core.base.CameraWidgetModel;
+import dji.v5.ux.core.base.DJISDKModel;
 import dji.v5.ux.core.base.SchedulerProvider;
 import dji.v5.ux.core.communication.BroadcastValues;
 import dji.v5.ux.core.communication.GlobalPreferenceKeys;
@@ -84,16 +84,13 @@ import dji.v5.ux.core.widget.simulator.SimulatorIndicatorWidget;
 import dji.v5.ux.core.widget.systemstatus.SystemStatusWidget;
 import dji.v5.ux.gimbal.GimbalFineTuneWidget;
 import dji.v5.ux.map.MapWidget;
-import dji.v5.ux.mapkit.core.maps.DJIUiSettings;
 import dji.v5.ux.training.simulatorcontrol.SimulatorControlWidget;
 import dji.v5.ux.visualcamera.CameraNDVIPanelWidget;
 import dji.v5.ux.visualcamera.CameraVisiblePanelWidget;
 import dji.v5.ux.visualcamera.zoom.FocalZoomWidget;
-import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.plugins.RxJavaPlugins;
-
+import dji.v5.ux.visualcamera.storage.CameraConfigStorageWidgetModel;
 /**
  * 메인 레이아웃
  */
@@ -128,6 +125,12 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     private GimbalFineTuneWidget gimbalFineTuneWidget;
     private PhysicalDevicePosition lastDevicePosition = PhysicalDevicePosition.UNKNOWN;
     private CameraLensType lastLensType = CameraLensType.UNKNOWN;
+
+    private CameraConfigStorageWidgetModel cameraConfigStorageWidgetModel;
+
+
+
+
 
 
     private CompositeDisposable compositeDisposable;
@@ -177,7 +180,12 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         gimbalFineTuneWidget = findViewById(R.id.setting_menu_gimbal_fine_tune);
         //mapWidget = findViewById(R.id.widget_map);
 
+
         initClickListener();
+
+
+        //SDCardState();
+
 
         MediaDataCenter.getInstance().getVideoStreamManager().addStreamSourcesListener(
                 sources -> {
@@ -203,6 +211,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         secondaryFPVWidget.setSurfaceViewZOrderOnTop(true);
         secondaryFPVWidget.setSurfaceViewZOrderMediaOverlay(true);
 
+        //지도 부분 업로드
 //        try{
 //        mapWidget.initAMap(map -> {
 //            // map.setOnMapClickListener(latLng -> onViewClick(mapWidget));
@@ -261,6 +270,31 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         });
     }
 
+//    private void SDCardState() {
+//        Log.d("test","SDCardState");
+//        try {
+//            if (cameraConfigStorageWidgetModel.getSDCardLoadState() != null) {
+//                cameraConfigStorageWidgetModel.getSDCardLoadState().subscribe(
+//                        this::handleSDCardState,
+//                        this::handleError
+//                );
+//            }
+//        }
+//        catch (Exception e) {
+//            Log.d("test","SDCardState error " + e);
+//        }
+//
+//
+//    }
+
+    private void handleSDCardState(SDCardLoadState sdCardLoadState) {
+        Log.d("test","handleSDCardState" + cameraConfigStorageWidgetModel.getSDCardLoadState());
+    }
+
+    private void handleError(Throwable error) {
+        Log.d("test","handleError");
+    }
+
     private void toggleRightDrawer() {
         mDrawerLayout.openDrawer(GravityCompat.END);
     }
@@ -315,6 +349,10 @@ public class DefaultLayoutActivity extends AppCompatActivity {
                 .observeOn(SchedulerProvider.ui())
                 .subscribe(this::isGimableAdjustClicked, RxUtil.logErrorConsumer("test","test")));
         ViewUtil.setKeepScreen(this, true);
+
+//        cameraConfigStorageWidgetModel.getCameraStorageState().subscribe(
+//                result -> Log.d("test","getCameraStorageState : "+ result),
+//                error -> Log.d("test","getCameraStorageState error"));
     }
 
    @Override

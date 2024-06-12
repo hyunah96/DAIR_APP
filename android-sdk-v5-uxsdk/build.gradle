@@ -66,6 +66,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
 
 
+
     api 'org.maplibre.gl:android-plugin-annotation-v9:1.0.0'
     api 'org.maplibre.gl:android-sdk-turf:5.9.0'
     api 'org.maplibre.gl:android-sdk:9.4.2'

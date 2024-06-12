@@ -158,6 +158,10 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     }
     //endregion
 
+    public Flowable<SDCardLoadState> getSDCardLoadState() {
+        return sdCardState.toFlowable();
+    }
+
     //region LifeCycle
     @Override
     protected void inSetup() {
@@ -186,7 +190,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 sdAvailableCaptureCount.onNext(sdcardInfo.getAvailablePhotoCount());
                 //sd카드에 저장가능한 비디오 녹화 시간
                 sdCardRecordingTime.onNext(sdcardInfo.getAvailableVideoDuration());
-                Log.d("test","sd카드 상태 :" + sdcardInfo.getStorageState() + "sd카드 남은 저장공간 : " +sdcardInfo.getStorageLeftCapacity());
+                Log.d("test","sd카드 상태 : " + sdcardInfo.getStorageState() + "sd카드 남은 저장공간 : " +sdcardInfo.getStorageLeftCapacity());
             }
             else {
                 Log.d("test","sdcardInfo is null");
@@ -213,6 +217,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     //endregion
 
     //region Helpers
+    //저장소 변경되는 부분  업데이트
     private void updateCameraStorageState() {
         CameraStorageLocation currentStorageLocation = storageLocationProcessor.getValue();
         if (CameraStorageLocation.UNKNOWN.equals(currentStorageLocation)) {
@@ -223,7 +228,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
         switch (currentStorageLocation) {
             case SDCARD:
                 if (!SDCardLoadState.UNKNOWN.equals(sdCardState.getValue())) {
-                    Log.d("test","!SDCardLoadState UNKNOWN");
+                    Log.d("test","!SDCardLoadState UNKNOWN " + sdCardState.getValue());
                     sdCardOperationState = sdCardState.getValue();
                 }
                 break;

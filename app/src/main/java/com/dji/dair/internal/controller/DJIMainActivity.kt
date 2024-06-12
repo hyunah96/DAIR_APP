@@ -87,7 +87,6 @@ abstract class DJIMainActivity: AppCompatActivity() {
         }
         observeSDKMananer()
         checkPermissionAndRequest()
-        SDCardState()
     }
 
 
@@ -160,9 +159,6 @@ abstract class DJIMainActivity: AppCompatActivity() {
         }
     }
 
-    private fun SDCardState() {
-        Log.d("test","DJIMainActivity SDCardState")
-    }
     private fun checkPermissionAndRequest() {
         if(!checkPermission()) {
             requestPermission()
