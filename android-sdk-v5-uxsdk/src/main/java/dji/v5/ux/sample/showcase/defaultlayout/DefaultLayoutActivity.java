@@ -126,7 +126,10 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     private PhysicalDevicePosition lastDevicePosition = PhysicalDevicePosition.UNKNOWN;
     private CameraLensType lastLensType = CameraLensType.UNKNOWN;
 
-    private CameraConfigStorageWidgetModel cameraConfigStorageWidgetModel;
+    private CameraConfigStorageWidgetModel storageWidgetModel;
+
+    private DJISDKModel djisdkModel;
+    private ObservableInMemoryKeyedStore keyedStore;
 
 
 
@@ -180,8 +183,14 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         gimbalFineTuneWidget = findViewById(R.id.setting_menu_gimbal_fine_tune);
         //mapWidget = findViewById(R.id.widget_map);
 
+        storageWidgetModel = new CameraConfigStorageWidgetModel(djisdkModel , keyedStore);
+
+        djisdkModel = DJISDKModel.getInstance();
+        keyedStore = ObservableInMemoryKeyedStore.getInstance();
 
         initClickListener();
+
+        setupSDCardStateListener();
 
 
         //SDCardState();
@@ -270,6 +279,27 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         });
     }
 
+    private void setupSDCardStateListener() {
+
+        storageWidgetModel.getCameraStorageState().subscribe(
+                sdCardLoadState -> {
+                    runOnUiThread(() -> {
+                        if (sdCardLoadState != null) {
+                            if (sdCardLoadState.getStorageOperationState() == SDCardLoadState.INSERTED) {
+                                connectDatabase();
+                            }
+                        }
+                    });
+                },
+                throwable -> Log.d("test","setupSDCardStateListener error")
+                );
+    }
+
+
+    private void connectDatabase() {
+
+    }
+
 //    private void SDCardState() {
 //        Log.d("test","SDCardState");
 //        try {
@@ -287,13 +317,6 @@ public class DefaultLayoutActivity extends AppCompatActivity {
 //
 //    }
 
-    private void handleSDCardState(SDCardLoadState sdCardLoadState) {
-        Log.d("test","handleSDCardState" + cameraConfigStorageWidgetModel.getSDCardLoadState());
-    }
-
-    private void handleError(Throwable error) {
-        Log.d("test","handleError");
-    }
 
     private void toggleRightDrawer() {
         mDrawerLayout.openDrawer(GravityCompat.END);
@@ -304,6 +327,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         //mapWidget.onDestroy();
+        storageWidgetModel.cleanup();
         MediaDataCenter.getInstance().getVideoStreamManager().clearAllStreamSourcesListeners();
         removeChannelStateListener();
         DJINetworkManager.getInstance().removeNetworkStatusListener(networkStatusListener);
@@ -314,6 +338,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d("test","DefaultLayoutActivity onResume");
+        storageWidgetModel.setup();
         //mapWidget.onResume();
         compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(systemStatusListPanelWidget.closeButtonPressed()

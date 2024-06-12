@@ -106,7 +106,7 @@ public abstract class WidgetModel {
     }
 
     /**
-     * Clean up the widget model by destroying all the resources used
+     * Clean up : 사용된 모든 리소스를 삭제하여 위젯 모델을 정리합니다.
      */
     public synchronized void cleanup() {
         if (keyDisposables != null) {
