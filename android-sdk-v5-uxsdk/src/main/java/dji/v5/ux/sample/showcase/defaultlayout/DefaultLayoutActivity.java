@@ -93,6 +93,8 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import dji.v5.ux.visualcamera.storage.CameraConfigStorageWidgetModel;
 import dji.sdk.keyvalue.value.camera.CameraStorageInfo;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 /**
@@ -287,33 +289,55 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     }
 
     private void setupSDCardStateListener() {
-        Log.d("test","setupSDCardStateListener in");
+        Log.d("test", "setupSDCardStateListener in");
 
-        try {
-            Log.d("test","setupSDCardStateListener try");
-            storageWidgetModel.getSDCardLoadState().subscribe(
-                    sdCardLoadState -> {
-                        runOnUiThread(() -> {
-                            if(sdCardLoadState != null) {
-                                //Log.d("test" ,"storageWidgetModel.getSDCardLoadState() : "+ storageWidgetModel.getSDCardLoadState().toString());
-                                Log.d("test"," sdCardLoadState is not null ");
-                                Log.d("test", "sdCardLoadState :" + sdCardLoadState.toString());
-                                try{
-                                    if(sdCardLoadState == SDCardLoadState.INSERTED) {
-                                        //if(cameraStorageInfo.getStorageState() == SDCardLoadState.INSERTED)
-                                        Log.d("test", "setupSDCardStateListener SDCardLoadState.INSERTED ");
-
-                                        connectDatabase();
-                                    }
-                            }
-                                catch (Exception e){
-                                    Log.d("test" ,"sdCardLoadState error " + e);
+        Disposable disposable = storageWidgetModel.getSDCardLoadState()
+                .subscribeOn(Schedulers.io())  // 백그라운드 I/O 스레드에서 실행
+                .subscribe(sdCardLoadState -> {
+                            Log.d("test", "Received SDCardLoadState: " + sdCardLoadState);
+                            if (sdCardLoadState != null) {
+                                Log.d("test", "SDCardLoadState is not null");
+                                if (sdCardLoadState == SDCardLoadState.INSERTED) {
+                                    Log.d("test", "SDCardLoadState.INSERTED");
+                                    connectDatabase();
                                 }
                             }
-
+                        },
+                        throwable -> {
+                            Log.e("test", "Error in SDCardLoadState subscription", throwable);
                         });
-                    });
-        }
+
+        compositeDisposable.add(disposable); // 구독 관리를 위해 CompositeDisposable에 추가
+    }
+
+
+//        Log.d("test","setupSDCardStateListener in");
+//
+//        try {
+//            Log.d("test","setupSDCardStateListener try");
+//            storageWidgetModel.getSDCardLoadState().subscribe(
+//                    sdCardLoadState -> {
+//                        runOnUiThread(() -> {
+//                            if(sdCardLoadState != null) {
+//                                //Log.d("test" ,"storageWidgetModel.getSDCardLoadState() : "+ storageWidgetModel.getSDCardLoadState().toString());
+//                                Log.d("test"," sdCardLoadState is not null ");
+//                                Log.d("test", "sdCardLoadState :" + sdCardLoadState.toString());
+//                                try{
+//                                    if(sdCardLoadState == SDCardLoadState.INSERTED) {
+//                                        //if(cameraStorageInfo.getStorageState() == SDCardLoadState.INSERTED)
+//                                        Log.d("test", "setupSDCardStateListener SDCardLoadState.INSERTED ");
+//
+//                                        connectDatabase();
+//                                    }
+//                            }
+//                                catch (Exception e){
+//                                    Log.d("test" ,"sdCardLoadState error " + e);
+//                                }
+//                            }
+//
+//                        });
+//                    });
+//        }
 
 //            storageWidgetModel.getCameraStorageState().subscribe(
 //                    sdCardState -> {
@@ -334,10 +358,9 @@ public class DefaultLayoutActivity extends AppCompatActivity {
 //                    }
 //            );
 
-        catch (Exception e) {
-            Log.d("test","setupSDCardStateListener error" + e);
-        }
-    }
+//        catch (Exception e) {
+//            Log.d("test","setupSDCardStateListener error" + e);
+//        }
 
 
 

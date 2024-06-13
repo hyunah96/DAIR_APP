@@ -67,9 +67,13 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     private final DataProcessor<CameraStorageInfos> storageInfosProcessor;
     private final DataProcessor<VideoResolutionFrameRate> resolutionAndFrameRateProcessor;
     private final DataProcessor<PhotoFileFormat> photoFileFormatProcessor;
-    private final DataProcessor<SDCardLoadState> sdCardState;
+    //private final DataProcessor<SDCardLoadState> sdCardState;
 
     //private BehaviorSubject<SDCardLoadState> sdCardState = BehaviorSubject.createDefault(SDCardLoadState.UNKNOWN);
+
+    private BehaviorSubject<SDCardLoadState> sdCardState;
+
+
     private final DataProcessor<SDCardLoadState> innerStorageState;
     private final DataProcessor<Integer> sdAvailableCaptureCount;
     private final DataProcessor<Integer> innerStorageAvailableCaptureCount;
@@ -93,8 +97,10 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
         storageLocationProcessor = DataProcessor.create(CameraStorageLocation.UNKNOWN);
         resolutionAndFrameRateProcessor = DataProcessor.create(new VideoResolutionFrameRate());
         photoFileFormatProcessor = DataProcessor.create(PhotoFileFormat.UNKNOWN);
-        sdCardState = DataProcessor.create(SDCardLoadState.UNKNOWN);
+        //sdCardState = DataProcessor.create(SDCardLoadState.UNKNOWN);
         innerStorageState = DataProcessor.create(SDCardLoadState.UNKNOWN);
+
+        sdCardState = BehaviorSubject.createDefault(SDCardLoadState.UNKNOWN);
 
         cameraColorProcessor = DataProcessor.create(CameraColor.UNKNOWN);
         availableCapacity = DataProcessor.create(INVALID_AVAILABLE_CAPACITY);
@@ -164,8 +170,8 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
 
     public Flowable<SDCardLoadState> getSDCardLoadState() {
         Log.d("test" ,"getSDCardLoadState() ");
-        //return sdCardState.toFlowable(BackpressureStrategy.LATEST);
-        return sdCardState.toFlowable();
+        return sdCardState.toFlowable(BackpressureStrategy.LATEST);
+        //return sdCardState.toFlowable();
     }
 
     //region LifeCycle
