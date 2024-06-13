@@ -50,7 +50,9 @@ import dji.v5.ux.core.base.WidgetModel;
 import dji.v5.ux.core.communication.ObservableInMemoryKeyedStore;
 import dji.v5.ux.core.module.FlatCameraModule;
 import dji.v5.ux.core.util.DataProcessor;
+import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
 
 /**
  * Widget Model for the {@link CameraConfigStorageWidget} used to define
@@ -66,6 +68,8 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     private final DataProcessor<VideoResolutionFrameRate> resolutionAndFrameRateProcessor;
     private final DataProcessor<PhotoFileFormat> photoFileFormatProcessor;
     private final DataProcessor<SDCardLoadState> sdCardState;
+
+    //private BehaviorSubject<SDCardLoadState> sdCardState = BehaviorSubject.createDefault(SDCardLoadState.UNKNOWN);
     private final DataProcessor<SDCardLoadState> innerStorageState;
     private final DataProcessor<Integer> sdAvailableCaptureCount;
     private final DataProcessor<Integer> innerStorageAvailableCaptureCount;
@@ -140,9 +144,9 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     }
 
     /**
-     * Get the current camera photo storage location.
+     * 현재 카메라 사진 저장 위치를 가져옵니다.
      *
-     * @return Flowable for the DataProcessor that user should subscribe to.
+     * 사용자가 구독해야 하는 데이터프로세서에 대한 플로우블을 반환합니다.
      */
     public Flowable<CameraStorageState> getCameraStorageState() {
         return cameraStorageState.toFlowable();
@@ -159,6 +163,8 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     //endregion
 
     public Flowable<SDCardLoadState> getSDCardLoadState() {
+        Log.d("test" ,"getSDCardLoadState() ");
+        //return sdCardState.toFlowable(BackpressureStrategy.LATEST);
         return sdCardState.toFlowable();
     }
 
@@ -184,13 +190,14 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 Log.d("test","sdcardInfo != null");
                 //sd카드 상태
                 sdCardState.onNext(sdcardInfo.getStorageState());
+                Log.d("test", "Updating sdCardState with value: " + sdcardInfo.getStorageState());
                 //sd카드 남은 저장공간
                 availableCapacity.onNext(sdcardInfo.getStorageLeftCapacity());
                 //sd카드에 저장가능한 사진의 수
                 sdAvailableCaptureCount.onNext(sdcardInfo.getAvailablePhotoCount());
                 //sd카드에 저장가능한 비디오 녹화 시간
                 sdCardRecordingTime.onNext(sdcardInfo.getAvailableVideoDuration());
-                Log.d("test","sd카드 상태 : " + sdcardInfo.getStorageState() + "sd카드 남은 저장공간 : " +sdcardInfo.getStorageLeftCapacity());
+                Log.d("test","sd카드 상태 : " + sdcardInfo.getStorageState() + " sd카드 남은 저장공간 : " +sdcardInfo.getStorageLeftCapacity());
             }
             else {
                 Log.d("test","sdcardInfo is null");
@@ -228,7 +235,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
         switch (currentStorageLocation) {
             case SDCARD:
                 if (!SDCardLoadState.UNKNOWN.equals(sdCardState.getValue())) {
-                    Log.d("test","!SDCardLoadState UNKNOWN " + sdCardState.getValue());
+                    Log.d("test","!SDCardLoadState " + sdCardState.getValue());
                     sdCardOperationState = sdCardState.getValue();
                 }
                 break;
@@ -384,9 +391,8 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
         }
 
         /**
-         * Get the current storage operation state.
-         *
-         * @return The current storage operation state.
+         * 현재 스토리지 작동 상태를 가져옵니다.
+         * 현재 스토리지 작업 상태를 반환합니다.
          */
         @NonNull
         public SDCardLoadState getStorageOperationState() {
