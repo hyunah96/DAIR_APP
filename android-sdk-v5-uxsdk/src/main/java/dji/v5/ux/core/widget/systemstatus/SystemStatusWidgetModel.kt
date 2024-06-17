@@ -23,6 +23,7 @@
 
 package dji.v5.ux.core.widget.systemstatus
 
+import android.util.Log
 import dji.sdk.keyvalue.key.FlightControllerKey
 import dji.sdk.keyvalue.key.KeyTools
 import dji.v5.manager.diagnostic.DJIDeviceStatus
@@ -97,6 +98,7 @@ class SystemStatusWidgetModel(
 
     //region LifeCycle
     override fun inSetup() {
+        Log.d("test","SystemStatusWidgetModel inSetup")
         bindDataProcessor(
             KeyTools.createKey(
                 FlightControllerKey.KeyAreMotorsOn), areMotorsOnDataProcessor)

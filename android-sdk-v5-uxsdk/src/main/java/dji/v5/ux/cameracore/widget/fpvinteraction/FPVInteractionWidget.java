@@ -118,6 +118,7 @@ public class FPVInteractionWidget extends FrameLayoutWidget<Object> implements V
 
     @Override
     protected void initView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        Log.d("test","FPVInteractionWidget initView");
         inflate(context, R.layout.uxsdk_widget_fpv_interaction, this);
         focusTargetView = findViewById(R.id.view_focus_target);
         exposureMeterView = findViewById(R.id.view_exposure_meter);

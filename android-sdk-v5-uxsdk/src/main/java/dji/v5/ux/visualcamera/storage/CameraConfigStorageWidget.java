@@ -141,6 +141,7 @@ public class CameraConfigStorageWidget extends ConstraintLayoutWidget<Object> im
         addReaction(widgetModel.getCameraColor()
                 .observeOn(SchedulerProvider.ui())
                 .subscribe(this::updateColor, RxUtil.logErrorConsumer(TAG, "reactToUpdateColor")));
+
     }
     //endregion
 

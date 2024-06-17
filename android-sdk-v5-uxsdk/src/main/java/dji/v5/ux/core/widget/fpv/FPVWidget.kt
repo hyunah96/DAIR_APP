@@ -27,6 +27,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -68,6 +69,7 @@ private const val LANDSCAPE_ROTATION_ANGLE = 0
 /**
  * This widget shows the video feed from the camera.
  */
+//@JvmOverloads 코틀린에서 생성한 함수를 자바 코드에서 오버로딩 가능
 open class FPVWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -256,6 +258,7 @@ open class FPVWidget @JvmOverloads constructor(
 
     //region Constructor
     override fun initView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) {
+        Log.d("test","FPVWidget initView")
         inflate(context, R.layout.uxsdk_widget_fpv, this)
     }
 

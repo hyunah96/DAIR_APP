@@ -37,6 +37,7 @@ import dji.sdk.keyvalue.value.camera.CameraMode;
 import dji.sdk.keyvalue.value.camera.CameraStorageInfo;
 import dji.sdk.keyvalue.value.camera.CameraStorageInfos;
 import dji.sdk.keyvalue.value.camera.CameraStorageLocation;
+import dji.sdk.keyvalue.value.camera.CameraStorageState;
 import dji.sdk.keyvalue.value.camera.PhotoFileFormat;
 import dji.sdk.keyvalue.value.camera.SDCardLoadState;
 import dji.sdk.keyvalue.value.camera.VideoFrameRate;
@@ -84,7 +85,8 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     //region Public Data
     private final DataProcessor<ImageFormat> imageFormatProcessor;
     //endregion
-    private final DataProcessor<CameraStorageState> cameraStorageState;
+    //private final DataProcessor<CameraStorageState> cameraStorageState;
+    private final BehaviorSubject<CameraStorageState> cameraStorageState;
     private ComponentIndexType cameraIndex = ComponentIndexType.LEFT_OR_MAIN;
     private CameraLensType lensType = CameraLensType.CAMERA_LENS_ZOOM;
     private final FlatCameraModule flatCameraModule;
@@ -115,7 +117,8 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 CameraMode.UNKNOWN, CameraStorageLocation.UNKNOWN, SDCardLoadState.UNKNOWN,
                 INVALID_AVAILABLE_CAPACITY, INVALID_AVAILABLE_CAPACITY, INVALID_AVAILABLE_CAPACITY);
         storageInfosProcessor = DataProcessor.create(new CameraStorageInfos(CameraStorageLocation.UNKNOWN, new ArrayList<>()));
-        cameraStorageState = DataProcessor.create(cameraSSDStorageState);
+        //cameraStorageState = DataProcessor.create(cameraSSDStorageState);
+        cameraStorageState = BehaviorSubject.createDefault(cameraSSDStorageState);
         flatCameraModule = new FlatCameraModule();
         addModule(flatCameraModule);
     }
@@ -155,7 +158,10 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
      * 사용자가 구독해야 하는 데이터프로세서에 대한 플로우블을 반환합니다.
      */
     public Flowable<CameraStorageState> getCameraStorageState() {
-        return cameraStorageState.toFlowable();
+        Log.d("test" ,"getCameraStorageState() " + sdCardState.getValue());
+
+        //return cameraStorageState.toFlowable();
+        return cameraStorageState.toFlowable(BackpressureStrategy.LATEST);
     }
 
     /**
@@ -169,7 +175,8 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     //endregion
 
     public Flowable<SDCardLoadState> getSDCardLoadState() {
-        Log.d("test" ,"getSDCardLoadState() ");
+        Log.d("test" ,"getSDCardLoadState() " + sdCardState.getValue());
+
         return sdCardState.toFlowable(BackpressureStrategy.LATEST);
         //return sdCardState.toFlowable();
     }
@@ -196,7 +203,10 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 Log.d("test","sdcardInfo != null");
                 //sd카드 상태
                 sdCardState.onNext(sdcardInfo.getStorageState());
-                Log.d("test", "Updating sdCardState with value: " + sdcardInfo.getStorageState());
+                Log.d("test", "Updating sdCardState with value1: " + sdcardInfo.getStorageState());
+
+                //setupSDCardStateListener();
+
                 //sd카드 남은 저장공간
                 availableCapacity.onNext(sdcardInfo.getStorageLeftCapacity());
                 //sd카드에 저장가능한 사진의 수
@@ -212,7 +222,18 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
         bindDataProcessor(KeyTools.createCameraKey(CameraKey.KeyVideoResolutionFrameRate, cameraIndex, lensType), resolutionAndFrameRateProcessor);
         bindDataProcessor(KeyTools.createCameraKey(CameraKey.KeyPhotoFileFormat, cameraIndex, lensType), photoFileFormatProcessor);
         bindDataProcessor(KeyTools.createKey(CameraKey.KeyCameraColor, cameraIndex), cameraColorProcessor);
+
     }
+
+
+//    private void setupSDCardStateListener() {
+//        Log.d("test","setupSDCardStateListener");
+//        getCameraStorageState().subscribe(
+//                state -> Log.d ("test","setupSDCardStateListener : " + state.getStorageOperationState()),
+//                error -> Log.d("test", " error : "+ error)
+//        );
+//
+//    }
 
     @Override
     protected void inCleanup() {

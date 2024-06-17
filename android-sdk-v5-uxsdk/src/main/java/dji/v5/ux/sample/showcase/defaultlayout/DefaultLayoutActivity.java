@@ -23,7 +23,7 @@
 
 package dji.v5.ux.sample.showcase.defaultlayout;
 
-import android.annotation.SuppressLint;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,9 +38,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import dji.sdk.keyvalue.key.CameraKey;
-import dji.sdk.keyvalue.key.KeyTools;
-import dji.sdk.keyvalue.value.camera.SDCardLoadState;
+
 import dji.sdk.keyvalue.value.common.CameraLensType;
 import dji.sdk.keyvalue.value.common.ComponentIndexType;
 import dji.v5.common.video.channel.VideoChannelState;
@@ -93,8 +91,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import dji.v5.ux.visualcamera.storage.CameraConfigStorageWidgetModel;
 import dji.sdk.keyvalue.value.camera.CameraStorageInfo;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import dji.sdk.keyvalue.key.DJIKey;
 
 
 /**
@@ -137,6 +134,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     private DJISDKModel djisdkModel;
     private ObservableInMemoryKeyedStore keyedStore;
 
+    private CameraStorageInfo cameraStorageInfo;
 
 
 
@@ -162,7 +160,6 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         Log.d("test","DefaultLayoutActivity onCreate");
 
@@ -196,11 +193,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         djisdkModel = DJISDKModel.getInstance();
         keyedStore = ObservableInMemoryKeyedStore.getInstance();
 
-
-
         initClickListener();
-
-
 
         //SDCardState();
 
@@ -288,104 +281,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         });
     }
 
-    private void setupSDCardStateListener() {
-        Log.d("test", "setupSDCardStateListener in");
 
-        Disposable disposable = storageWidgetModel.getSDCardLoadState()
-                .subscribeOn(Schedulers.io())  // 백그라운드 I/O 스레드에서 실행
-                .subscribe(sdCardLoadState -> {
-                            Log.d("test", "Received SDCardLoadState: " + sdCardLoadState);
-                            if (sdCardLoadState != null) {
-                                Log.d("test", "SDCardLoadState is not null");
-                                if (sdCardLoadState == SDCardLoadState.INSERTED) {
-                                    Log.d("test", "SDCardLoadState.INSERTED");
-                                    connectDatabase();
-                                }
-                            }
-                        },
-                        throwable -> {
-                            Log.e("test", "Error in SDCardLoadState subscription", throwable);
-                        });
-
-        compositeDisposable.add(disposable); // 구독 관리를 위해 CompositeDisposable에 추가
-    }
-
-
-//        Log.d("test","setupSDCardStateListener in");
-//
-//        try {
-//            Log.d("test","setupSDCardStateListener try");
-//            storageWidgetModel.getSDCardLoadState().subscribe(
-//                    sdCardLoadState -> {
-//                        runOnUiThread(() -> {
-//                            if(sdCardLoadState != null) {
-//                                //Log.d("test" ,"storageWidgetModel.getSDCardLoadState() : "+ storageWidgetModel.getSDCardLoadState().toString());
-//                                Log.d("test"," sdCardLoadState is not null ");
-//                                Log.d("test", "sdCardLoadState :" + sdCardLoadState.toString());
-//                                try{
-//                                    if(sdCardLoadState == SDCardLoadState.INSERTED) {
-//                                        //if(cameraStorageInfo.getStorageState() == SDCardLoadState.INSERTED)
-//                                        Log.d("test", "setupSDCardStateListener SDCardLoadState.INSERTED ");
-//
-//                                        connectDatabase();
-//                                    }
-//                            }
-//                                catch (Exception e){
-//                                    Log.d("test" ,"sdCardLoadState error " + e);
-//                                }
-//                            }
-//
-//                        });
-//                    });
-//        }
-
-//            storageWidgetModel.getCameraStorageState().subscribe(
-//                    sdCardState -> {
-//                        runOnUiThread(() -> {
-//                            if (sdCardState != null)
-//                            {
-//                                Log.d("test","sdCardState is not null");
-//                                if(sdCardState.getStorageOperationState() == SDCardLoadState.INSERTED);
-//                                connectDatabase();
-//                            }
-//                            else {
-//                                Log.d("test","sdCardState is null");
-//                            }
-//                        });
-//                    },
-//                    throwable -> {
-//                        Log.d("test","throwable" , throwable);
-//                    }
-//            );
-
-//        catch (Exception e) {
-//            Log.d("test","setupSDCardStateListener error" + e);
-//        }
-
-
-
-
-
-    private void connectDatabase() {
-
-    }
-
-//    private void SDCardState() {
-//        Log.d("test","SDCardState");
-//        try {
-//            if (cameraConfigStorageWidgetModel.getSDCardLoadState() != null) {
-//                cameraConfigStorageWidgetModel.getSDCardLoadState().subscribe(
-//                        this::handleSDCardState,
-//                        this::handleError
-//                );
-//            }
-//        }
-//        catch (Exception e) {
-//            Log.d("test","SDCardState error " + e);
-//        }
-//
-//
-//    }
 
 
     private void toggleRightDrawer() {
@@ -397,7 +293,6 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         //mapWidget.onDestroy();
-        //storageWidgetModel.cleanup();
         MediaDataCenter.getInstance().getVideoStreamManager().clearAllStreamSourcesListeners();
         removeChannelStateListener();
         DJINetworkManager.getInstance().removeNetworkStatusListener(networkStatusListener);
@@ -408,7 +303,6 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d("test","DefaultLayoutActivity onResume");
-        //storageWidgetModel.setup();
         //mapWidget.onResume();
         compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(systemStatusListPanelWidget.closeButtonPressed()
@@ -446,8 +340,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         ViewUtil.setKeepScreen(this, true);
 
 
-        setupSDCardStateListener();
-    }
+    };
 
    @Override
     protected void onPause() {

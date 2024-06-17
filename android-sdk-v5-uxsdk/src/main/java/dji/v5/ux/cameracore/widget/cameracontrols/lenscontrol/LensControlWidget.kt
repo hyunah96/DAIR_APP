@@ -41,6 +41,7 @@ open class LensControlWidget @JvmOverloads constructor(
     }
 
     override fun initView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) {
+        Log.d("test","LensControlWidget initView")
         View.inflate(context, R.layout.uxsdk_camera_lens_control_widget, this)
     }
 
