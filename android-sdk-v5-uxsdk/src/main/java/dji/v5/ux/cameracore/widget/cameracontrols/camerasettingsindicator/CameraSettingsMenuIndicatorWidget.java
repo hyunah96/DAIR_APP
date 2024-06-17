@@ -28,6 +28,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -46,7 +47,9 @@ import dji.v5.ux.core.communication.OnStateChangeCallback;
  * <p>
  * The widget is part of the {@link CameraControlsWidget}.
  * Tapping the widget can be used to open the camera settings panel
+ * 카메라 MENU 탭
  */
+
 public class CameraSettingsMenuIndicatorWidget extends FrameLayoutWidget<Object> implements View.OnClickListener {
 
     //region Fields
@@ -69,6 +72,7 @@ public class CameraSettingsMenuIndicatorWidget extends FrameLayoutWidget<Object>
 
     @Override
     protected void initView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        Log.d("test","CameraSettingsMenuIndicatorWidget initView");
         inflate(context, R.layout.uxsdk_widget_camera_settings_menu_indicator, this);
         foregroundTextView = findViewById(R.id.text_view_menu);
         setOnClickListener(this);

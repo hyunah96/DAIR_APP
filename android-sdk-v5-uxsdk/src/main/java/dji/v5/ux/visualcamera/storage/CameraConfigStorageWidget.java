@@ -29,6 +29,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -91,6 +92,7 @@ public class CameraConfigStorageWidget extends ConstraintLayoutWidget<Object> im
 
     @Override
     protected void initView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        Log.d("test","CameraConfigStorageWidget initView");
         inflate(context, R.layout.uxsdk_widget_camera_config_storage, this);
         storageIconImageView = findViewById(R.id.imageview_storage_icon);
         cameraColorTextView = findViewById(R.id.textview_camera_color);
@@ -102,6 +104,7 @@ public class CameraConfigStorageWidget extends ConstraintLayoutWidget<Object> im
         cameraColorNameArray = getResources().getStringArray(R.array.uxsdk_camera_color_type);
 
         if (!isInEditMode()) {
+            Log.d("test","CameraConfigStorageWidget initView !isInEditMode()");
             widgetModel = new CameraConfigStorageWidgetModel(DJISDKModel.getInstance(), ObservableInMemoryKeyedStore.getInstance());
         }
         initDefaults();
@@ -116,6 +119,7 @@ public class CameraConfigStorageWidget extends ConstraintLayoutWidget<Object> im
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (!isInEditMode()) {
+            Log.d("test","CameraConfigStorageWidget widgetModel.setup()");
             widgetModel.setup();
         }
     }

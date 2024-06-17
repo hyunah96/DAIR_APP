@@ -98,7 +98,7 @@ public abstract class WidgetModel {
         keyDisposables = new CompositeDisposable();
         compositeDisposable = new CompositeDisposable();
         initializeConnection();
-        Log.d("test","WidgetModel setup");
+        Log.d("test","WidgetModel setup()");
         inSetup();
         for (BaseModule module : moduleList) {
             module.setup(this);

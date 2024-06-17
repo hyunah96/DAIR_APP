@@ -23,6 +23,8 @@
 
 package dji.v5.ux.cameracore.widget.cameracapture.shootphoto;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -159,6 +161,7 @@ public class ShootPhotoWidgetModel extends WidgetModel implements ICameraIndex {
      * @return Flowable with {@link CameraPhotoStorageState} instance
      */
     public Flowable<CameraPhotoStorageState> getCameraStorageState() {
+        Log.d("test","ShootPhotoWidgetModel getCameraStorageState()");
         return cameraStorageState.toFlowable();
     }
 

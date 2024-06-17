@@ -92,6 +92,7 @@ public class CameraCaptureWidget extends ConstraintLayoutWidget<Object> implemen
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (!isInEditMode()) {
+            Log.d("test","CameraCaptureWidget setup()");
             widgetModel.setup();
         }
     }

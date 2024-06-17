@@ -26,6 +26,7 @@ package dji.v5.ux.core.panel.topbar
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import androidx.core.content.res.use
 import dji.v5.utils.common.LogUtils
 import dji.v5.ux.R
@@ -48,6 +49,7 @@ import dji.v5.ux.core.widget.perception.PerceptionStateWidget
 import dji.v5.ux.warning.DeviceHealthAndStatusWidget
 import dji.v5.ux.core.widget.setting.SettingWidget
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Container for the top bar widgets. This [BarPanelWidget] is divided into two parts.
@@ -173,6 +175,7 @@ open class TopBarPanelWidget @JvmOverloads constructor(
         if (!WidgetValue.DEVICE_HEALTH.isItemExcluded(excludedItemsValue)) {
             deviceHealthAndStatusWidget = DeviceHealthAndStatusWidget(context, attrs)
             rightPanelItems.add(PanelItem(deviceHealthAndStatusWidget))
+            Log.d("test","DEVICE_HEALTH is not Exclude")
         } else {
             deviceHealthAndStatusWidget = null
         }
