@@ -157,6 +157,7 @@ open class SystemStatusWidget @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         if (!isInEditMode) {
+            Log.d("test","SystemStatusWidget onAttachedToWindow")
             widgetModel.setup()
         }
     }

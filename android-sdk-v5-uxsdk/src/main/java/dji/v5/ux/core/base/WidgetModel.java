@@ -281,11 +281,11 @@ public abstract class WidgetModel {
     }
 
     /**
-     * Get the product connection status - true if connected, false otherwise.
-     *
-     * @return Flowable of boolean type
+     * 제품 연결 상태 가져오기 - 연결되면 true, 연결되지 않으면 false입니다.
+     * @return boolean type의 Flowable을 반환
      */
     public Flowable<Boolean> getProductConnection() {
+        Log.d("test","WidgetModel getProductConnection() " + productConnectionProcessor.getValue());
         return productConnectionProcessor.toFlowable();
     }
 

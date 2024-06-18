@@ -132,6 +132,7 @@ public class CameraConfigStorageWidget extends ConstraintLayoutWidget<Object> im
         super.onDetachedFromWindow();
     }
 
+    //변화 감지
     @Override
     protected void reactToModelChanges() {
         addReaction(widgetModel.getImageFormat()
@@ -155,6 +156,7 @@ public class CameraConfigStorageWidget extends ConstraintLayoutWidget<Object> im
     }
 
     private void updateStatus(CameraConfigStorageWidgetModel.CameraStorageState cameraStorageState) {
+        Log.d("test","CameraConfigStorageWidget updateStatus");
         CameraMode cameraMode = cameraStorageState.getCameraMode();
 
         updateForegroundDrawable(cameraStorageState);
@@ -190,9 +192,11 @@ public class CameraConfigStorageWidget extends ConstraintLayoutWidget<Object> im
         if (cameraStorageState.getStorageLocation() == CameraStorageLocation.SDCARD) {
             switch (cameraStorageState.getStorageOperationState()) {
                 case NOT_INSERTED:
+                    Log.d("test","updateForegroundDrawable : NOT_INSERTED");
                     foregroundDrawable = getSDCardStorageIcon(StorageIconState.NOT_INSERTED);
                     break;
                 case INSERTED:
+                    Log.d("test","updateForegroundDrawable : INSERTED");
                     foregroundDrawable = getSDCardStorageIcon(StorageIconState.NORMAL);
                     break;
                 default:
