@@ -23,6 +23,7 @@
 
 package dji.v5.ux.visualcamera.storage;
 
+import android.os.Environment;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -30,6 +31,9 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.greenrobot.eventbus.EventBus;
+
 import dji.sdk.keyvalue.key.CameraKey;
 import dji.sdk.keyvalue.key.KeyTools;
 import dji.sdk.keyvalue.value.camera.CameraColor;
@@ -45,6 +49,7 @@ import dji.sdk.keyvalue.value.camera.VideoResolution;
 import dji.sdk.keyvalue.value.camera.VideoResolutionFrameRate;
 import dji.sdk.keyvalue.value.common.CameraLensType;
 import dji.sdk.keyvalue.value.common.ComponentIndexType;
+import dji.v5.manager.datacenter.media.MediaManager;
 import dji.v5.ux.core.base.DJISDKModel;
 import dji.v5.ux.core.base.ICameraIndex;
 import dji.v5.ux.core.base.WidgetModel;
@@ -53,7 +58,6 @@ import dji.v5.ux.core.module.FlatCameraModule;
 import dji.v5.ux.core.util.DataProcessor;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.subjects.BehaviorSubject;
 
 /**
  * Widget Model for the {@link CameraConfigStorageWidget} used to define
@@ -70,12 +74,6 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     private final DataProcessor<PhotoFileFormat> photoFileFormatProcessor;
     private final DataProcessor<SDCardLoadState> sdCardState;
 
-    //private BehaviorSubject<SDCardLoadState> sdCardState = BehaviorSubject.createDefault(SDCardLoadState.UNKNOWN);
-
-
-
-
-
     private final DataProcessor<SDCardLoadState> innerStorageState;
     private final DataProcessor<Integer> sdAvailableCaptureCount;
     private final DataProcessor<Integer> innerStorageAvailableCaptureCount;
@@ -87,7 +85,6 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     private final DataProcessor<ImageFormat> imageFormatProcessor;
     //endregion
     private final DataProcessor<CameraStorageState> cameraStorageState;
-    //private final BehaviorSubject<CameraStorageState> cameraStorageState;
     private ComponentIndexType cameraIndex = ComponentIndexType.LEFT_OR_MAIN;
     private CameraLensType lensType = CameraLensType.CAMERA_LENS_ZOOM;
     private final FlatCameraModule flatCameraModule;
@@ -194,6 +191,9 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 Log.d("test","sdcardInfo != null");
                 //sd카드 상태
                 sdCardState.onNext(sdcardInfo.getStorageState());
+
+
+
                 Log.d("test", "sdCardState.getValue() : " + sdCardState.getValue());
 
                 sdcardStateListener();
@@ -204,6 +204,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 sdAvailableCaptureCount.onNext(sdcardInfo.getAvailablePhotoCount());
                 //sd카드에 저장가능한 비디오 녹화 시간
                 sdCardRecordingTime.onNext(sdcardInfo.getAvailableVideoDuration());
+
                 Log.d("test","sd카드 상태 : " + sdcardInfo.getStorageState() + " sd카드 남은 저장공간 : " +sdcardInfo.getStorageLeftCapacity());
             }
             else {
@@ -222,8 +223,9 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
         sdCardState.toFlowable().subscribe(
                 state -> {
                     if (state == SDCardLoadState.INSERTED) {
-                        connectToDatabase();
+                        EventBus.getDefault().post(new SDCardInsertedEvent());
                         Log.d("test", "setupSDCardStateListener : SDCardLoadState.INSERTED");
+
                     }
                     if (state == SDCardLoadState.NOT_INSERTED) {
                         Log.d("test","setupSDCardStateListener : SDCardLoadState.NOT_INSERTED");
@@ -231,9 +233,6 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 },
                 error -> Log.d("CameraStorage", "Error in observing SD Card state: " + error)
         );
-    }
-
-    private void connectToDatabase() {
     }
 
 
@@ -267,6 +266,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
             case SDCARD:
                 if (!SDCardLoadState.UNKNOWN.equals(sdCardState.getValue())) {
                     Log.d("test","!SDCardLoadState " + sdCardState.getValue());
+
                     sdCardOperationState = sdCardState.getValue();
                 }
                 break;
@@ -412,9 +412,8 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
         }
 
         /**
-         * Get the current storage location.
-         *
-         * @return The current storage location.
+         * 현재 저장소 위치를 가져옵니다.
+         * 현재 저장소 위치를 반환합니다.
          */
         @NonNull
         public CameraStorageLocation getStorageLocation() {

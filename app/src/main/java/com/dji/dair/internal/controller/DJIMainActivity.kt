@@ -16,8 +16,8 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
 import com.dji.dair.internal.models.globalViewModels
+import com.dji.dair.internal.repository.FTPConnectionManager
 import dji.v5.utils.common.PermissionUtil
-import dji.sdk.keyvalue.value.camera.CameraStorageInfo
 
 
 abstract class DJIMainActivity: AppCompatActivity() {
@@ -51,7 +51,9 @@ abstract class DJIMainActivity: AppCompatActivity() {
     private val msdkInfoVm: MSDKInfoVm by viewModels()
     private val msdkManagerVM : MSDKManagerVM by globalViewModels()
     private val handler: Handler = Handler(Looper.getMainLooper())
-    //private val CameraStorageInfo sdCardInfo;
+
+    private var ftpManger: FTPConnectionManager? = null
+
 
 
     //추상 메서드 선언 , 하위 클래스인 DJIAircraftMainActivity 에서 구현
@@ -67,6 +69,8 @@ abstract class DJIMainActivity: AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         Log.d("test","DJIMainActivity onCreate()")
+
+        ftpManger = FTPConnectionManager()
 
         //로그인 버튼
 
