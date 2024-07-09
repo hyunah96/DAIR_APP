@@ -22,6 +22,7 @@
  */
 package dji.v5.ux.core.widget.fpv
 
+import android.util.Log
 import dji.sdk.keyvalue.key.CameraKey
 import dji.sdk.keyvalue.value.camera.CameraOrientation
 import dji.sdk.keyvalue.value.camera.CameraVideoStreamSourceType
@@ -34,6 +35,7 @@ import dji.v5.common.video.stream.StreamSource
 import dji.v5.et.create
 import dji.v5.et.createCamera
 import dji.v5.manager.datacenter.MediaDataCenter
+import dji.v5.manager.interfaces.IMediaManager
 import dji.v5.utils.common.JsonUtil
 import dji.v5.utils.common.LogUtils
 import dji.v5.ux.core.base.DJISDKModel
@@ -154,9 +156,11 @@ class FPVWidgetModel(
     private fun updateCameraDisplay() {
         streamSource?.let {
             var cameraName = it.physicalDeviceCategory.name + "_" + it.physicalDeviceType.deviceType
+            Log.d("test", "physicalDeviceType : " + it.physicalDeviceType.deviceType)
             if (currentLensType != CameraLensType.CAMERA_LENS_DEFAULT) {
                 cameraName = cameraName + "_" + currentLensType.name
             }
+
             cameraNameProcessor.onNext(cameraName)
             cameraSideProcessor.onNext(it.physicalDevicePosition.name)
         }

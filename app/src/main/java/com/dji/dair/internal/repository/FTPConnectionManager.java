@@ -3,21 +3,23 @@ package com.dji.dair.internal.repository;
 import android.os.Environment;
 import android.util.Log;
 
-import dji.v5.common.callback.CommonCallbacks;
-import dji.v5.manager.SDKManager;
-import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import dji.v5.common.video.stream.PhysicalDeviceCategory;
 
-import dji.v5.manager.SDKManager;
-import dji.v5.manager.interfaces.IMediaManager;
+import dji.v5.manager.datacenter.MediaDataCenter;
+import dji.v5.manager.datacenter.media.MediaFile;
 import dji.v5.manager.datacenter.media.MediaManager;
-import dji.v5.ux.core.base.DJISDKModel;
+import dji.v5.manager.datacenter.media.PullMediaFileListParam;
+import dji.v5.manager.datacenter.media.MediaFileListData;
+import dji.v5.manager.interfaces.IMediaManager;
 import dji.v5.ux.visualcamera.storage.SDCardInsertedEvent;
 import dji.v5.ux.visualcamera.storage.SDCardRemovedEvent;
+import dji.v5.common.video.stream.StreamSource;
 
 public class FTPConnectionManager {
 
@@ -47,10 +49,16 @@ public class FTPConnectionManager {
                     ftpClient.connect(server, port);
                     Log.d("test", "ftpClient.getReplyCode(): " + ftpClient.getReplyCode());
                     if (ftpClient.login(user, password)) {
-                        MediaManager mediaManager =
+                        try{
+                        //List<MediaFile> mediaFiles = MediaManager.getInstance().getMediaFileListData().getData();
+                            fetchMediaFiles();
+                        }
+                        catch (Exception e) {
+                            Log.d("test", " error : " + e);
+                        }
                         //ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
                         // 230 : 로그인 성공
-                        Log.d("test", "connectFTP login 성공 " + ftpClient.getReplyCode());
+
                         ftp_connected = true;
                         return true;
                     } else {
@@ -64,6 +72,20 @@ public class FTPConnectionManager {
         }
         return false;
     }
+    private void fetchMediaFiles() {
+        try{
+            MediaManager mediaManager = MediaManager.getInstance();
+            if(mediaManager != null){
+            MediaFileListData mediaFileListData = mediaManager.getMediaFileListData();
+            List<MediaFile> mediaFiles = mediaFileListData.getData();
+            }
+
+        }
+        catch (Exception e){
+            Log.d("test","error : "+e);
+        }
+    }
+
 
 
 

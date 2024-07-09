@@ -49,7 +49,9 @@ import dji.sdk.keyvalue.value.camera.VideoResolution;
 import dji.sdk.keyvalue.value.camera.VideoResolutionFrameRate;
 import dji.sdk.keyvalue.value.common.CameraLensType;
 import dji.sdk.keyvalue.value.common.ComponentIndexType;
+import dji.v5.manager.datacenter.media.MediaFileListData;
 import dji.v5.manager.datacenter.media.MediaManager;
+import dji.v5.manager.interfaces.IMediaManager;
 import dji.v5.ux.core.base.DJISDKModel;
 import dji.v5.ux.core.base.ICameraIndex;
 import dji.v5.ux.core.base.WidgetModel;
@@ -205,7 +207,9 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 //sd카드에 저장가능한 비디오 녹화 시간
                 sdCardRecordingTime.onNext(sdcardInfo.getAvailableVideoDuration());
 
-                Log.d("test","sd카드 상태 : " + sdcardInfo.getStorageState() + " sd카드 남은 저장공간 : " +sdcardInfo.getStorageLeftCapacity());
+
+
+                Log.d("test","sd카드 상태 : " + sdcardInfo.getStorageState() + " sd카드에 저장가능한 사진의 수 : " +sdcardInfo.getAvailablePhotoCount());
             }
             else {
                 Log.d("test","sdcardInfo is null");
@@ -254,7 +258,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     //endregion
 
     //region Helpers
-    //저장소 변경되는 부분  업데이트
+    //저장소 변경되는 부분 업데이트
     private void updateCameraStorageState() {
         CameraStorageLocation currentStorageLocation = storageLocationProcessor.getValue();
         if (CameraStorageLocation.UNKNOWN.equals(currentStorageLocation)) {
