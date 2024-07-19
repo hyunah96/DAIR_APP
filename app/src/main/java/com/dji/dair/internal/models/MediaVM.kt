@@ -26,7 +26,12 @@ class MediaVM : DJIViewModel() {
 
     fun destroy() {
         KeyManager.getInstance().cancelListen(this);
+        removeAllFileListStateListener()
         MediaDataCenter.getInstance().mediaManager.release()
+    }
+
+    private fun removeAllFileListStateListener() {
+        MediaDataCenter.getInstance().mediaManager.removeAllVideoPlayStateListener()
     }
 
 

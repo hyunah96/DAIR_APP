@@ -134,6 +134,8 @@ abstract class DJIMainActivity: AppCompatActivity() {
     //권한 체크
     private fun checkPermission(): Boolean{
         for(i in permissionArray.indices) {
+
+            Log.d("test"," i = " + permissionArray[i])
             if(!PermissionUtil.isPermissionGranted(this,permissionArray[i])) {
                 return false
             }

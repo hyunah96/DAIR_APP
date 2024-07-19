@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.ColorInt;
@@ -45,9 +46,14 @@ import androidx.annotation.StyleRes;
 import dji.sdk.keyvalue.value.camera.CameraColor;
 import dji.sdk.keyvalue.value.camera.CameraMode;
 import dji.sdk.keyvalue.value.camera.CameraStorageLocation;
+import dji.sdk.keyvalue.value.camera.CameraStorageState;
 import dji.sdk.keyvalue.value.camera.SDCardLoadState;
 import dji.sdk.keyvalue.value.common.CameraLensType;
 import dji.sdk.keyvalue.value.common.ComponentIndexType;
+import dji.v5.manager.datacenter.media.MediaFile;
+import dji.v5.manager.datacenter.media.MediaFileListData;
+import dji.v5.manager.datacenter.media.MediaManager;
+import dji.v5.manager.interfaces.IMediaManager;
 import dji.v5.utils.common.DisplayUtil;
 import dji.v5.utils.common.StringUtils;
 import dji.v5.ux.R;
@@ -157,8 +163,8 @@ public class CameraConfigStorageWidget extends ConstraintLayoutWidget<Object> im
 
     private void updateStatus(CameraConfigStorageWidgetModel.CameraStorageState cameraStorageState) {
         Log.d("test","CameraConfigStorageWidget updateStatus");
-        CameraMode cameraMode = cameraStorageState.getCameraMode();
 
+        CameraMode cameraMode = cameraStorageState.getCameraMode();
         updateForegroundDrawable(cameraStorageState);
 
         String status = "";

@@ -196,6 +196,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
 
 
 
+
                 Log.d("test", "sdCardState.getValue() : " + sdCardState.getValue());
 
                 sdcardStateListener();
