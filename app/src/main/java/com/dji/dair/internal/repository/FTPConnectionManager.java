@@ -58,8 +58,6 @@ public class FTPConnectionManager {
                         catch (Exception e) {
                             Log.d("test", " error : " + e);
                         }
-                        //ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
                         ftp_connected = true;
                         return true;
                     } else {
@@ -78,90 +76,94 @@ private void fetchMediaFiles()
         IMediaManager mediaManager = MediaDataCenter.getInstance().getMediaManager();
         MediaFileFilter mediaFileFilter = MediaFileFilter.PHOTO;
         PullMediaFileListParam params = new PullMediaFileListParam.Builder().filter(mediaFileFilter).build();
-        mediaManager.pullMediaFileListFromCamera(params, new CommonCallbacks.CompletionCallback() {
-            @Override
-            public void onSuccess() {
-                Log.d("test","onSuccess");
-                MediaFileListData mediaFileListData = mediaManager.getMediaFileListData();
-                List<MediaFile> files = mediaFileListData.getData();
+            mediaManager.pullMediaFileListFromCamera(params, new CommonCallbacks.CompletionCallback() {
+                @Override
+                public void onSuccess() {
+                    Log.d("test","onSuccess");
+                    MediaFileListData mediaFileListData = mediaManager.getMediaFileListData();
+                    List<MediaFile> files = mediaFileListData.getData();
+                    for(MediaFile file : files){
+                        Log.d("test","file은 ? : "+ file);
+                        file.pullOriginalMediaFileFromCamera(0, new MediaFileDownloadListener(){
 
-                MediaFile mediaFile = mediaFile.pullOriginalMediaFileFromCamera(0, new MediaFileDownloadListener() {
-                    @Override
-                    public void onStart() {
+                            @Override
+                            public void onStart() {
 
-                    }
+                                Log.d("test"," onStart");
+                            }
 
-                    @Override
-                    public void onProgress(long total, long current) {
+                            @Override
+                            public void onProgress(long total, long current) {
+                                double progressPercentage = (double) current / total * 100;
+                                Log.d("test", "progressPercentage : "+ progressPercentage);
 
-                    }
 
-                    @Override
-                    public void onRealtimeDataUpdate(byte[] data, long position) {
+                            }
 
-                    }
+                            @Override
+                            public void onRealtimeDataUpdate(byte[] data, long position) {
 
-                    @Override
-                    public void onFinish() {
+                            }
 
-                    }
+                            @Override
+                            public void onFinish() {
+                                Log.d("test","onFinish");
 
-                    @Override
-                    public void onFailure(IDJIError error) {
+                            }
 
+                            @Override
+                            public void onFailure(IDJIError error) {
+                                Log.d("test","onFailure");
+
+                            }
+                        });
                     }
                 }
 
-                    for(MediaFile mediaFile : files) {
-                        InputStream inputStream = mediaFile.?;
+                @Override
+                public void onFailure(@NonNull IDJIError idjiError) {
 
-                        String name = mediaFile.getFileName();
-                        boolean success = ftpClient.storeFile(name, inputStream);
-                        inputStream.close();
-                        ftpClient.enterLocalPassiveMode();
-                        ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-                    }
-
-
-            }
-            @Override
-            public void onFailure(@NonNull IDJIError idjiError) {
-                Log.d("test","onFail");
-
-            }
-        });
-
-    }
-
-
-//        for (MediaFile mediaFile : files) {
-//            InputStream inputStream = mediaFile.fetchPreview();  // 예시에서는 미리보기를 사용합니다. 실제 파일을 받으려면 fetchFileData()를 사용하세요.
-//
-//            // FTP 서버에 파일 업로드
-//            String remoteFileName = "uploads/" + mediaFile.getFileName();
-//            boolean done = ftpClient.storeFile(remoteFileName, inputStream);
-//            inputStream.close();
-//
-//            if (done) {
-//                System.out.println("The file is uploaded successfully.");
-//            } else {
-//                System.out.println("Could not upload the file.");
+                }
+            });
+}
+//    private void fetchMediaFiles() {
+//        IMediaManager mediaManager = MediaDataCenter.getInstance().getMediaManager();
+//        MediaFileFilter mediaFileFilter = MediaFileFilter.PHOTO;
+//        PullMediaFileListParam params = new PullMediaFileListParam.Builder().filter(mediaFileFilter).build();
+//        mediaManager.pullMediaFileListFromCamera(params, new CommonCallbacks.CompletionCallback<MediaFileListData>() {
+//            @Override
+//            public void onSuccess(MediaFileListData mediaFileListData) {
+//                List<MediaFile> files = mediaFileListData.getData();
+//                for (MediaFile mediaFile : files) {
+//                    try {
+//                        // 파일 다운로드
+//                        InputStream inputStream = mediaFile.fetchOriginalMediaFileFromCamera();
+//                        // FTP 설정
+//                        ftpClient.enterLocalPassiveMode();
+//                        ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+//                        // FTP로 파일 전송
+//                        boolean success = ftpClient.storeFile(mediaFile.getFileName(), inputStream);
+//                        if (success) {
+//                            Log.d("FTP", "File uploaded successfully");
+//                        } else {
+//                            Log.d("FTP", "Failed to upload file");
+//                        }
+//                        inputStream.close();
+//                    } catch (IOException ex) {
+//                        Log.e("FTP", "Error in file transfer", ex);
+//                    }
+//                }
 //            }
-//        }
 //
-//    } catch (IOException ex) {
-//        System.out.println("Oops! Something wrong happened. Error: " + ex.getMessage());
-//        ex.printStackTrace();
-//    } finally {
-//        try {
-//            if (ftpClient.isConnected()) {
-//                ftpClient.logout();
-//                ftpClient.disconnect();
+//            @Override
+//            public void onFailure(IDJIError error) {
+//                Log.e("FTP", "Failed to fetch media files: " + error.getDescription());
 //            }
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
+//        });
 //    }
+
+
+
 
 
 
