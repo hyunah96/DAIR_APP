@@ -69,6 +69,7 @@ abstract class DJIMainActivity: AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         Log.d("test","DJIMainActivity onCreate()")
+        Log.d("test","build version : "+ Build.VERSION.SDK_INT);
 
         ftpManger = FTPConnectionManager()
 

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ntp.TimeStamp;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -17,8 +18,17 @@ import dji.v5.common.error.IDJIError;
 import dji.v5.manager.datacenter.media.MediaFileDownloadListener;
 import dji.v5.manager.datacenter.media.MediaFileFilter;
 import dji.v5.manager.interfaces.IMediaManager;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import dji.v5.manager.datacenter.MediaDataCenter;
 import dji.v5.manager.datacenter.media.MediaFile;
@@ -36,6 +46,7 @@ public class FTPConnectionManager {
     private String user = "hakim";
     private String password = "kgb0563";
     private boolean ftp_connected = false;
+    private FileOutputStream fos;
 
     public FTPConnectionManager() {
         EventBus.getDefault().register(this);
@@ -53,6 +64,7 @@ public class FTPConnectionManager {
                         // 230 : 로그인 성공
                         try{
                             Log.d("test", "try in ftpClient.getReplyCode(): " + ftpClient.getReplyCode());
+
                             fetchMediaFiles();
                         }
                         catch (Exception e) {
@@ -76,45 +88,57 @@ private void fetchMediaFiles()
         IMediaManager mediaManager = MediaDataCenter.getInstance().getMediaManager();
         MediaFileFilter mediaFileFilter = MediaFileFilter.PHOTO;
         PullMediaFileListParam params = new PullMediaFileListParam.Builder().filter(mediaFileFilter).build();
+
             mediaManager.pullMediaFileListFromCamera(params, new CommonCallbacks.CompletionCallback() {
                 @Override
                 public void onSuccess() {
                     Log.d("test","onSuccess");
                     MediaFileListData mediaFileListData = mediaManager.getMediaFileListData();
                     List<MediaFile> files = mediaFileListData.getData();
+
+
                     for(MediaFile file : files){
+
                         Log.d("test","file은 ? : "+ file);
                         file.pullOriginalMediaFileFromCamera(0, new MediaFileDownloadListener(){
-
                             @Override
                             public void onStart() {
-
                                 Log.d("test"," onStart");
+                                fos = new FileOutputStream(file,true);
+                                var savePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                                String TimeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                                var fileName = TimeStamp + ".png";
+                                File file = new File(savePath, fileName);
                             }
 
                             @Override
                             public void onProgress(long total, long current) {
                                 double progressPercentage = (double) current / total * 100;
                                 Log.d("test", "progressPercentage : "+ progressPercentage);
-
-
                             }
-
                             @Override
                             public void onRealtimeDataUpdate(byte[] data, long position) {
+                                try {
+                                    fos.write(data);
+                                    fos.flush();
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+
 
                             }
 
                             @Override
                             public void onFinish() {
                                 Log.d("test","onFinish");
-
+                                var storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                                String path = "storage/emulated/0/Pictures/";
+                                //saveFileToLocalStorage(file,path);
                             }
 
                             @Override
                             public void onFailure(IDJIError error) {
                                 Log.d("test","onFailure");
-
                             }
                         });
                     }
@@ -126,47 +150,25 @@ private void fetchMediaFiles()
                 }
             });
 }
-//    private void fetchMediaFiles() {
-//        IMediaManager mediaManager = MediaDataCenter.getInstance().getMediaManager();
-//        MediaFileFilter mediaFileFilter = MediaFileFilter.PHOTO;
-//        PullMediaFileListParam params = new PullMediaFileListParam.Builder().filter(mediaFileFilter).build();
-//        mediaManager.pullMediaFileListFromCamera(params, new CommonCallbacks.CompletionCallback<MediaFileListData>() {
-//            @Override
-//            public void onSuccess(MediaFileListData mediaFileListData) {
-//                List<MediaFile> files = mediaFileListData.getData();
-//                for (MediaFile mediaFile : files) {
-//                    try {
-//                        // 파일 다운로드
-//                        InputStream inputStream = mediaFile.fetchOriginalMediaFileFromCamera();
-//                        // FTP 설정
-//                        ftpClient.enterLocalPassiveMode();
-//                        ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-//                        // FTP로 파일 전송
-//                        boolean success = ftpClient.storeFile(mediaFile.getFileName(), inputStream);
-//                        if (success) {
-//                            Log.d("FTP", "File uploaded successfully");
-//                        } else {
-//                            Log.d("FTP", "Failed to upload file");
-//                        }
-//                        inputStream.close();
-//                    } catch (IOException ex) {
-//                        Log.e("FTP", "Error in file transfer", ex);
+//private void saveFileToLocalStorage(MediaFile mediaFile, String path) {
+//        File file = new File(path , mediaFile.getFileName());
+//        try {
+//            FileOutputStream fos = new FileOutputStream(file){
+//                InputStream inputStream = mediaFile.getDate()){
+//                    byte [] buf = new byte[1024];
+//                    int len;
+//                    while ((len = inputStream.read(buf)) > 0){
+//                        fos.write(buf, 0 ,len);
 //                    }
-//                }
-//            }
+//                    fos.flush();
 //
-//            @Override
-//            public void onFailure(IDJIError error) {
-//                Log.e("FTP", "Failed to fetch media files: " + error.getDescription());
-//            }
-//        });
-//    }
-
-
-
-
-
-
+//                }
+//            };
+//        }
+//        catch (Exception e){
+//            Log.d("test", "Exception e :" + e);
+//        }
+//}
 
 
 
