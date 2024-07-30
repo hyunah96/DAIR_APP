@@ -98,19 +98,23 @@ private void fetchMediaFiles()
 
 
                     for(MediaFile file : files){
-
                         Log.d("test","file은 ? : "+ file);
                         file.pullOriginalMediaFileFromCamera(0, new MediaFileDownloadListener(){
                             @Override
                             public void onStart() {
                                 Log.d("test"," onStart");
-                                fos = new FileOutputStream(file,true);
                                 var savePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
                                 String TimeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                                 var fileName = TimeStamp + ".png";
                                 File file = new File(savePath, fileName);
+                                try {
+                                    fos = new FileOutputStream(file,true);
+                                    Log.d("test","onStart try ");
+                                } catch (FileNotFoundException e) {
+                                    Log.d("test","FileOutputStream e : "+ e);
+                                    throw new RuntimeException(e);
+                                }
                             }
-
                             @Override
                             public void onProgress(long total, long current) {
                                 double progressPercentage = (double) current / total * 100;
