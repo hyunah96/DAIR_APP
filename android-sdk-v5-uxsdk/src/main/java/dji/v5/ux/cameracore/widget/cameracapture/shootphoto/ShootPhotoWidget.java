@@ -40,6 +40,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.greenrobot.eventbus.EventBus;
+
 import dji.sdk.keyvalue.value.camera.CameraShootPhotoMode;
 import dji.sdk.keyvalue.value.camera.CameraStorageLocation;
 import dji.sdk.keyvalue.value.camera.SDCardLoadState;
@@ -58,6 +61,7 @@ import dji.v5.ux.core.base.widget.ConstraintLayoutWidget;
 import dji.v5.ux.core.communication.ObservableInMemoryKeyedStore;
 import dji.v5.ux.core.util.ProductUtil;
 import dji.v5.ux.core.util.RxUtil;
+import dji.v5.ux.visualcamera.storage.SDCardInsertedEvent;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
@@ -146,6 +150,7 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
 
     @Override
     protected void reactToModelChanges() {
+        Log.d("test","ShootPhotoWidget reactToModelChanges");
         addReaction(widgetModel.isShootingPhoto().observeOn(SchedulerProvider.ui())
                 .subscribe(this::onIsShootingPhotoChange, RxUtil.logErrorConsumer(TAG, "isShootingPhoto: ")));
         addReaction(reactToCanStartOrStopShootingPhoto());
@@ -189,28 +194,54 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
     @Override
     public void onClick(View v) {
         if (v.equals(centerImageView)) {
+            Log.d("test","촬영 클릭");
             actionOnShootingPhoto();
         }
     }
-
+    //촬영 버튼 클릭 감지
     private void actionOnShootingPhoto() {
-        if (!widgetModel.isPhotoMode()) {
+        if(!widgetModel.isPhotoMode()) {
             return;
         }
         Single<Boolean> stop = widgetModel.canStopShootingPhoto().firstOrError();
         Single<Boolean> start = widgetModel.canStartShootingPhoto().firstOrError();
-
-        addDisposable(Single.zip(stop, start, Pair::new).flatMapCompletable(pairs -> {
-                    if (pairs.first) {
-                        return widgetModel.stopShootPhoto();
-                    } else if (pairs.second) {
-                        return widgetModel.startShootPhoto();
-                    }
-                    return Completable.complete();
-                }).observeOn(SchedulerProvider.ui())
+        addDisposable(Single.zip(stop,start,Pair::new).flatMapCompletable(pairs -> {
+            if(pairs.first) {
+                return  widgetModel.stopShootPhoto();
+            }
+            else if(pairs.second) {
+                return widgetModel.startShootPhoto().andThen(Completable.fromAction(() ->
+                {
+                    Log.d("test","pairs.second EventBus");
+                    EventBus.getDefault().post(new ShootPhotoEvent());
+                }));
+            }
+                return Completable.complete();
+            }).observeOn(SchedulerProvider.ui())
                 .subscribe(() -> {
-                }, RxUtil.logErrorConsumer(TAG, "Start Stop Shoot Photo")));
+                }, RxUtil.logErrorConsumer(TAG,"Start Stop Shoot Photo")));
+
     }
+//기존 코드
+//    private void actionOnShootingPhoto() {
+//        if (!widgetModel.isPhotoMode()) {
+//            return;
+//        }
+//        Single<Boolean> stop = widgetModel.canStopShootingPhoto().firstOrError();
+//        Single<Boolean> start = widgetModel.canStartShootingPhoto().firstOrError();
+//
+//        addDisposable(Single.zip(stop, start, Pair::new).flatMapCompletable(pairs -> {
+//                    if (pairs.first) {
+//                        return widgetModel.stopShootPhoto();
+//                    } else if (pairs.second) {
+//                        Log.d("test","pairs.second");
+//                        return widgetModel.startShootPhoto();
+//                    }
+//                    return Completable.complete();
+//                }).observeOn(SchedulerProvider.ui())
+//                .subscribe(() -> {
+//                }, RxUtil.logErrorConsumer(TAG, "Start Stop Shoot Photo")));
+//    }
     //endregion
 
     //region private helpers
@@ -226,13 +257,16 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
             if (cameraPhotoStorageState.getStorageLocation() == CameraStorageLocation.SDCARD) {
                 foregroundDrawable = updateResourceWithStorageInSDCard(sdStorageState);
             } else if (cameraPhotoStorageState.getStorageLocation() == CameraStorageLocation.INTERNAL) {
+                Log.d("test","CameraStorageLocation.INTERNAL");
                 foregroundDrawable = updateResourceWithStorageInternal(sdStorageState);
             }
         } else if (cameraPhotoStorageState instanceof CameraSSDPhotoStorageState) {
             CameraSSDPhotoStorageState ssdStorageState = (CameraSSDPhotoStorageState) cameraPhotoStorageState;
             if (ssdStorageState.getStorageOperationState() == SSDOperationState.NOT_FOUND) {
+                Log.d("test","SSDOperationState.NOT_FOUND");
                 foregroundDrawable = getSSDStorageIcon(StorageIconState.NOT_INSERTED);
             } else if (ssdStorageState.getStorageOperationState() == SSDOperationState.FULL) {
+                Log.d("test","SSDOperationState.FULL");
                 foregroundDrawable = getSSDStorageIcon(StorageIconState.FULL);
             }
         }
@@ -251,6 +285,7 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
     private Drawable updateResourceWithStorageInSDCard(CameraSDPhotoStorageState sdStorageState) {
         Drawable foregroundDrawable = null;
         if (sdStorageState.getStorageOperationState() == SDCardLoadState.NOT_INSERTED) {
+            Log.d("test","updateResourceWithStorageInSDCard SDCardLoadState.NOT_INSERTED");
             foregroundDrawable = getSDCardStorageIcon(StorageIconState.NOT_INSERTED);
         }
         return foregroundDrawable;

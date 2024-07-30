@@ -92,6 +92,7 @@ public class CameraCaptureWidget extends ConstraintLayoutWidget<Object> implemen
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        //현재 편집 모드가 아니면
         if (!isInEditMode()) {
             Log.d("test","CameraCaptureWidget setup()");
             widgetModel.setup();
@@ -100,6 +101,7 @@ public class CameraCaptureWidget extends ConstraintLayoutWidget<Object> implemen
 
     @Override
     protected void onDetachedFromWindow() {
+        //현재 편집 모드가 아니면
         if (!isInEditMode()) {
             widgetModel.cleanup();
         }
@@ -112,13 +114,13 @@ public class CameraCaptureWidget extends ConstraintLayoutWidget<Object> implemen
     //UI 스레드로 변경사항을 전달하고 onCameraModeChange를 호출
     @Override
     protected void reactToModelChanges() {
-        Log.d("test","CameraCaptureWidget reactToModelChanges");
+        Log.d("test","카메라 모드 변경 감지 CameraCaptureWidget reactToModelChanges");
         addReaction(
                 widgetModel.getCameraMode()
                         .observeOn(SchedulerProvider.ui())
                         .subscribe(
                                 this::onCameraModeChange,
-                                RxUtil.logErrorConsumer(TAG, "Camera Mode Change: ")));
+                                RxUtil.logErrorConsumer(TAG, "카메라 모드 변경 감지 에러")));
 
     }
 
@@ -159,13 +161,13 @@ public class CameraCaptureWidget extends ConstraintLayoutWidget<Object> implemen
         for (View view : widgetMap.values()) {
             //촬영 버튼 비활성화
             if (view != null) view.setVisibility(INVISIBLE);
-            Log.d("test","INVISIBLE");
+            Log.d("test","촬영 버튼 비활성화");
         }
         View currentView = widgetMap.get(cameraMode);
         if (currentView != null) {
             //촬영 버튼 활성화
             widgetMap.get(cameraMode).setVisibility(VISIBLE);
-            Log.d("test","VISIBLE");
+            Log.d("test","촬영 버튼 활성화");
         }
     }
     //endregion

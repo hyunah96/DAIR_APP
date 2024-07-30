@@ -152,9 +152,9 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     }
 
     /**
-     * 현재 카메라 사진 저장 위치를 가져옵니다.
+     * 현재 카메라 사진 저장 위치를 가져옴
      *
-     * 사용자가 구독해야 하는 데이터프로세서에 대한 플로우블을 반환합니다.
+     * 사용자가 구독해야 하는 데이터에 대한 toFlowable 반환
      */
     public Flowable<CameraStorageState> getCameraStorageState() {
         return cameraStorageState.toFlowable();
@@ -190,12 +190,8 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
 
             CameraStorageInfo sdcardInfo = cameraStorageInfos.getCameraStorageInfoByLocation(CameraStorageLocation.SDCARD);
             if (sdcardInfo != null) {
-                Log.d("test","sdcardInfo != null");
                 //sd카드 상태
                 sdCardState.onNext(sdcardInfo.getStorageState());
-
-
-
 
                 Log.d("test", "sdCardState.getValue() : " + sdCardState.getValue());
 
@@ -207,8 +203,6 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 sdAvailableCaptureCount.onNext(sdcardInfo.getAvailablePhotoCount());
                 //sd카드에 저장가능한 비디오 녹화 시간
                 sdCardRecordingTime.onNext(sdcardInfo.getAvailableVideoDuration());
-
-
 
                 Log.d("test","sd카드 상태 : " + sdcardInfo.getStorageState() + " sd카드에 저장가능한 사진의 수 : " +sdcardInfo.getAvailablePhotoCount());
             }
@@ -224,7 +218,6 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
 
 
     private void sdcardStateListener() {
-
         sdCardState.toFlowable().subscribe(
                 state -> {
                     if (state == SDCardLoadState.INSERTED) {
@@ -265,7 +258,6 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
         if (CameraStorageLocation.UNKNOWN.equals(currentStorageLocation)) {
             return;
         }
-
         SDCardLoadState sdCardOperationState = null;
         switch (currentStorageLocation) {
             case SDCARD:
@@ -283,7 +275,6 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
             default:
                 break;
         }
-
         if (sdCardOperationState != null) {
             cameraStorageState.onNext(new CameraStorageState(flatCameraModule.getCameraModeDataProcessor().getValue(),
                     currentStorageLocation,

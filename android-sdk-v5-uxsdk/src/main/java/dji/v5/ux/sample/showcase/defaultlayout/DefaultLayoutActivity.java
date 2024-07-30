@@ -134,8 +134,6 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     private DJISDKModel djisdkModel;
     private ObservableInMemoryKeyedStore keyedStore;
 
-    private CameraStorageInfo cameraStorageInfo;
-
 
 
 

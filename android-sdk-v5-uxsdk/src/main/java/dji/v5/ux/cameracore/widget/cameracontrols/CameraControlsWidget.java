@@ -87,6 +87,7 @@ public class CameraControlsWidget extends ConstraintLayoutWidget<Object> impleme
     }
 
     //모델이 변화했을 때 반응할 메서드
+    //사진,영상 변환 스위치
     @Override
     protected void reactToModelChanges() {
         //Do Nothing
