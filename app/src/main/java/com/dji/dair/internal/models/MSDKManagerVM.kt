@@ -24,7 +24,6 @@ class MSDKManagerVM: ViewModel() {
 
 
     fun initMobileSDK(appContext: Context) {
-        Log.d("test","initMobileSDK")
         SDKManager.getInstance().init(appContext, object : SDKManagerCallback {
             //SDK 연결 성공 **앱을 맨 처음 설치할 때 무조건 인터넷 연결이 되어야함**
             override fun onRegisterSuccess() {

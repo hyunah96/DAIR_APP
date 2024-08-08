@@ -40,7 +40,7 @@ public abstract class CameraPhotoStorageState {
     }
 
     /**
-     *  Get the current storage location
+     *  현재 저장 위치 가져오기
      *
      * @return instance of CameraStorageLocation
      */
@@ -49,7 +49,7 @@ public abstract class CameraPhotoStorageState {
     }
 
     /**
-     *  Get the number of photos that can be clicked before running out of storage
+     *  저장 위치에 저장 가능한 사진의 수 (sd카드에 저장가능한 사진의 수 같은)
      *
      * @return long value representing count of photos
      */

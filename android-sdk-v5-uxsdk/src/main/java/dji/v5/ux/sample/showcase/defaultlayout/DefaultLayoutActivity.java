@@ -193,9 +193,6 @@ public class DefaultLayoutActivity extends AppCompatActivity {
 
         initClickListener();
 
-        //SDCardState();
-
-
         MediaDataCenter.getInstance().getVideoStreamManager().addStreamSourcesListener(
                 sources -> {
                     try {

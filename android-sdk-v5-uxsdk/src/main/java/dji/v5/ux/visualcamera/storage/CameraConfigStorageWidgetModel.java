@@ -27,6 +27,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -90,6 +91,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     private ComponentIndexType cameraIndex = ComponentIndexType.LEFT_OR_MAIN;
     private CameraLensType lensType = CameraLensType.CAMERA_LENS_ZOOM;
     private final FlatCameraModule flatCameraModule;
+    private boolean FTPlogin = false;
     //endregion
 
     //region Constructor
@@ -218,24 +220,31 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
 
 
     private void sdcardStateListener() {
-        sdCardState.toFlowable().subscribe(
+        sdCardState.toFlowable()
+                .distinctUntilChanged()
+                .debounce(1000L,TimeUnit.MILLISECONDS)
+                .subscribe(
                 state -> {
                     if (state == SDCardLoadState.INSERTED) {
-                        EventBus.getDefault().post(new SDCardInsertedEvent());
-                        Log.d("test", "setupSDCardStateListener : SDCardLoadState.INSERTED");
-
+                        if(!FTPlogin) {
+                            Log.d("test", "sdcardStateListener : SDCardLoadState.INSERTED");
+                            EventBus.getDefault().post(new SDCardInsertedEvent());
+                            FTPlogin = true;
+                        }
                     }
                     if (state == SDCardLoadState.NOT_INSERTED) {
                         Log.d("test","setupSDCardStateListener : SDCardLoadState.NOT_INSERTED");
+                        if(FTPlogin){
+                            Log.d("test","FTP서버 FTP login " + FTPlogin);
+                            EventBus.getDefault().post(new SDCardRemovedEvent());
+                            Log.d("test","FTP서버 연결 끝");
+                            FTPlogin = false;
+                        }
                     }
                 },
                 error -> Log.d("CameraStorage", "Error in observing SD Card state: " + error)
         );
     }
-
-
-
-
     @Override
     protected void inCleanup() {
         // do nothing

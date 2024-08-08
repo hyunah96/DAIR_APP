@@ -207,6 +207,7 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
         Single<Boolean> start = widgetModel.canStartShootingPhoto().firstOrError();
         addDisposable(Single.zip(stop,start,Pair::new).flatMapCompletable(pairs -> {
             if(pairs.first) {
+                Log.d("test","pairs.second first");
                 return  widgetModel.stopShootPhoto();
             }
             else if(pairs.second) {
