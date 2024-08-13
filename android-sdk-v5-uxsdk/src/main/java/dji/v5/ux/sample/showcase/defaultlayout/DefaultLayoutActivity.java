@@ -22,13 +22,11 @@
  */
 
 package dji.v5.ux.sample.showcase.defaultlayout;
-
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -90,9 +88,6 @@ import dji.v5.ux.visualcamera.zoom.FocalZoomWidget;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import dji.v5.ux.visualcamera.storage.CameraConfigStorageWidgetModel;
-import dji.sdk.keyvalue.value.camera.CameraStorageInfo;
-import dji.sdk.keyvalue.key.DJIKey;
-
 
 /**
  * 메인 레이아웃
@@ -134,8 +129,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     private DJISDKModel djisdkModel;
     private ObservableInMemoryKeyedStore keyedStore;
 
-
-
+    private boolean isConnected = false;
 
 
 
@@ -151,6 +145,8 @@ public class DefaultLayoutActivity extends AppCompatActivity {
             RTKStartServiceHelper.INSTANCE.startRtkService(false);
         }
     };
+
+    //private CheckNetworkState
 
     //endregion
 
@@ -238,6 +234,12 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         DJINetworkManager.getInstance().addNetworkStatusListener(networkStatusListener);
 
     }
+    private void checkNetwork() {
+        if(isConnected){
+            Toast.makeText(getApplicationContext(),"인터넷에 연결되어 있지 않으면 FTP서버에 사진을 저장할 수 없음 ",Toast.LENGTH_SHORT);
+        }
+    }
+
 
     private void isGimableAdjustClicked(BroadcastValues broadcastValues) {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
@@ -298,6 +300,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d("test","DefaultLayoutActivity onResume");
+        Toast.makeText(getApplicationContext(), "테스트입니다",Toast.LENGTH_SHORT).show();
         //mapWidget.onResume();
         compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(systemStatusListPanelWidget.closeButtonPressed()

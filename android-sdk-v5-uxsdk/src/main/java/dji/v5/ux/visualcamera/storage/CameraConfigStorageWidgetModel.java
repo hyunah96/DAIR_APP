@@ -24,6 +24,7 @@
 package dji.v5.ux.visualcamera.storage;
 
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -197,7 +198,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
 
                 Log.d("test", "sdCardState.getValue() : " + sdCardState.getValue());
 
-                sdcardStateListener();
+
 
                 //sd카드 남은 저장공간
                 availableCapacity.onNext(sdcardInfo.getStorageLeftCapacity());
@@ -205,7 +206,7 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 sdAvailableCaptureCount.onNext(sdcardInfo.getAvailablePhotoCount());
                 //sd카드에 저장가능한 비디오 녹화 시간
                 sdCardRecordingTime.onNext(sdcardInfo.getAvailableVideoDuration());
-
+                new Handler().postDelayed(() -> sdcardStateListener(), 1000);
                 Log.d("test","sd카드 상태 : " + sdcardInfo.getStorageState() + " sd카드에 저장가능한 사진의 수 : " +sdcardInfo.getAvailablePhotoCount());
             }
             else {

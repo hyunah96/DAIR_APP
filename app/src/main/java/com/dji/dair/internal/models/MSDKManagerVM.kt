@@ -22,10 +22,10 @@ class MSDKManagerVM: ViewModel() {
     //데이터베이스
     val lvDBDownloadProgress = MutableLiveData<Pair<Long,Long>>()
 
-
+    //SDK 연결 로직 앱을 맨 처음 설치할 때 무조건 인터넷 연결이 되어야함
     fun initMobileSDK(appContext: Context) {
         SDKManager.getInstance().init(appContext, object : SDKManagerCallback {
-            //SDK 연결 성공 **앱을 맨 처음 설치할 때 무조건 인터넷 연결이 되어야함**
+            //SDK 연결 성공
             override fun onRegisterSuccess() {
                 Log.d("test","onRegisterSuccess")
                 lvRegisterState.postValue(Pair(true, null))

@@ -1,20 +1,20 @@
 package com.dji.dair
 import android.Manifest
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
-import com.dji.dair.internal.models.BaseMainActivityVm
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import com.dji.dair.internal.models.BaseMainActivityVm
 import com.dji.dair.internal.models.MSDKInfoVm
 import com.dji.dair.internal.models.MSDKManagerVM
-import android.os.Handler
-import android.os.Looper
-import androidx.activity.result.contract.ActivityResultContracts
 import com.dji.dair.internal.models.globalViewModels
 import com.dji.dair.internal.repository.FTPConnectionManager
 import dji.v5.utils.common.PermissionUtil
@@ -51,8 +51,10 @@ abstract class DJIMainActivity: AppCompatActivity() {
     private val msdkInfoVm: MSDKInfoVm by viewModels()
     private val msdkManagerVM : MSDKManagerVM by globalViewModels()
     private val handler: Handler = Handler(Looper.getMainLooper())
-
     private var ftpManger: FTPConnectionManager? = null
+    private val checkNetworkState: CheckNetworkState by lazy {
+        CheckNetworkState(this)
+    }
 
 
 
@@ -72,6 +74,7 @@ abstract class DJIMainActivity: AppCompatActivity() {
         Log.d("test","build version : "+ Build.VERSION.SDK_INT);
 
         ftpManger = FTPConnectionManager()
+        checkNetworkState.register()
 
         //로그인 버튼
 
@@ -128,6 +131,12 @@ abstract class DJIMainActivity: AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        checkNetworkState.unregister()
+        Log.d("test","onDestroy!!!!!!!!!")
+    }
+
     private fun handleAfterPermissionPermitted() {
         prepareTestingToolsActivity()
     }
@@ -165,6 +174,8 @@ abstract class DJIMainActivity: AppCompatActivity() {
             }
         }
     }
+
+
 
     private fun checkPermissionAndRequest() {
         if(!checkPermission()) {
