@@ -1,45 +1,48 @@
 package com.dji.dair.internal.models;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
-import android.widget.Toast;
+import android.util.Log;
 
 import io.reactivex.annotations.NonNull;
 
-public class NetworkConnectionCheck extends ConnectivityManager.NetworkCallback {
 
-    private NetworkRequest networkRequest;
-    private ConnectivityManager connectivityManager;
-    private Context context;
+public class NetworkConnectionCheck extends ConnectivityManager.NetworkCallback{
+    private final ConnectivityManager manager;
+    private boolean connect = false;
 
     public NetworkConnectionCheck(Context context){
-        this.context = context;
-        networkRequest =
-                new NetworkRequest.Builder()
-                        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-                        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                        .build();
-        this.connectivityManager = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Log.d("test","NetworkConnectionCheck Context");
+        NetworkRequest request = new NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                .build();
+        this.manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        this.manager.registerNetworkCallback(request,this);
     }
-    public void register() {
-        this.connectivityManager.registerNetworkCallback(networkRequest,this);
+
+    public void finish() {
+        this.manager.unregisterNetworkCallback(this);
     }
-    public void unregister() {
-        this.connectivityManager.unregisterNetworkCallback(this);
+
+    public boolean isConnect() {
+        Log.d("test","NetworkConnectionCheck isConnect");
+        return this.connect;
     }
 
     @Override
     public void onAvailable(@NonNull Network network){
         super.onAvailable(network);
-        Toast.makeText(context.getApplicationContext(), "인터넷이 연결되어있음 ",Toast.LENGTH_SHORT);
+        Log.d("test","NetworkConnectionCheck onAvailable");
+        this.connect = true;
     }
 
     @Override
     public void onLost(@NonNull Network network){
         super.onLost(network);
-        Toast.makeText(context.getApplicationContext(), "인터넷이 연결되어있지 않음",Toast.LENGTH_SHORT);
+        Log.d("test","NetworkConnectionCheck onLost");
+        this.connect = false;
     }
+
 }

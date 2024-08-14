@@ -25,6 +25,7 @@ package dji.v5.ux.visualcamera.storage;
 
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -60,8 +61,11 @@ import dji.v5.ux.core.base.WidgetModel;
 import dji.v5.ux.core.communication.ObservableInMemoryKeyedStore;
 import dji.v5.ux.core.module.FlatCameraModule;
 import dji.v5.ux.core.util.DataProcessor;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * Widget Model for the {@link CameraConfigStorageWidget} used to define
@@ -206,8 +210,12 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
                 sdAvailableCaptureCount.onNext(sdcardInfo.getAvailablePhotoCount());
                 //sd카드에 저장가능한 비디오 녹화 시간
                 sdCardRecordingTime.onNext(sdcardInfo.getAvailableVideoDuration());
-                new Handler().postDelayed(() -> sdcardStateListener(), 1000);
-                Log.d("test","sd카드 상태 : " + sdcardInfo.getStorageState() + " sd카드에 저장가능한 사진의 수 : " +sdcardInfo.getAvailablePhotoCount());
+                try {
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> sdcardStateListener(), 3000);
+                    Log.d("test", "sd카드 상태 : " + sdcardInfo.getStorageState() + " sd카드에 저장가능한 사진의 수 : " + sdcardInfo.getAvailablePhotoCount());
+                }catch (Exception e){
+                    Log.d("test","catch~ "+ e);
+                }
             }
             else {
                 Log.d("test","sdcardInfo is null");
@@ -223,20 +231,28 @@ public class CameraConfigStorageWidgetModel extends WidgetModel implements ICame
     private void sdcardStateListener() {
         sdCardState.toFlowable()
                 .distinctUntilChanged()
-                .debounce(1000L,TimeUnit.MILLISECONDS)
+                .debounce(2000L,TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                 state -> {
+                    Log.d("test","state!!");
                     if (state == SDCardLoadState.INSERTED) {
                         if(!FTPlogin) {
                             Log.d("test", "sdcardStateListener : SDCardLoadState.INSERTED");
-                            EventBus.getDefault().post(new SDCardInsertedEvent());
-                            FTPlogin = true;
+                            try {
+                                new Thread(() -> {
+                                    EventBus.getDefault().post(new SDCardInsertedEvent());
+                                    FTPlogin = true;
+                                }).start();
+                            }catch (Exception e){
+                                Log.d("test","error .." + e);
+                            }
                         }
                     }
                     if (state == SDCardLoadState.NOT_INSERTED) {
                         Log.d("test","setupSDCardStateListener : SDCardLoadState.NOT_INSERTED");
                         if(FTPlogin){
-                            Log.d("test","FTP서버 FTP login " + FTPlogin);
                             EventBus.getDefault().post(new SDCardRemovedEvent());
                             Log.d("test","FTP서버 연결 끝");
                             FTPlogin = false;

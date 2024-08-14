@@ -5,7 +5,7 @@ import dji.v5.utils.inner.SDKConfig
 
 /**
  * MSDK와 상호 작용하는 로직을 캡슐화하고
- * MSDK 정보와 관련된 정보를 읽습니다.
+ * MSDK 정보와 관련된 정보를 읽는다
  */
 class MSDKInfoModel {
 

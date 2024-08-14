@@ -35,8 +35,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-
+import dji.sdk.keyvalue.converter.SingleValueConverter;
+import dji.sdk.keyvalue.key.CameraKey;
+import dji.sdk.keyvalue.key.DJIKeyInfo;
+import dji.sdk.keyvalue.value.camera.LaserWorkMode;
+import dji.sdk.keyvalue.value.camera.LaserWorkModeMsg;
 import dji.sdk.keyvalue.value.common.CameraLensType;
 import dji.sdk.keyvalue.value.common.ComponentIndexType;
 import dji.v5.common.video.channel.VideoChannelState;
@@ -45,6 +48,7 @@ import dji.v5.common.video.interfaces.IVideoChannel;
 import dji.v5.common.video.interfaces.VideoChannelStateChangeListener;
 import dji.v5.common.video.stream.PhysicalDevicePosition;
 import dji.v5.common.video.stream.StreamSource;
+import dji.v5.manager.aircraft.upgrade.model.ComponentType;
 import dji.v5.manager.datacenter.MediaDataCenter;
 import dji.v5.network.DJINetworkManager;
 import dji.v5.network.IDJINetworkStatusListener;
@@ -52,13 +56,13 @@ import dji.v5.utils.common.JsonUtil;
 import dji.v5.utils.common.LogUtils;
 import dji.v5.ux.R;
 import dji.v5.ux.accessory.RTKStartServiceHelper;
+import dji.v5.ux.cameracore.util.CameraActionSound;
 import dji.v5.ux.cameracore.widget.autoexposurelock.AutoExposureLockWidget;
 import dji.v5.ux.cameracore.widget.cameracontrols.CameraControlsWidget;
 import dji.v5.ux.cameracore.widget.cameracontrols.lenscontrol.LensControlWidget;
 import dji.v5.ux.cameracore.widget.focusexposureswitch.FocusExposureSwitchWidget;
 import dji.v5.ux.cameracore.widget.focusmode.FocusModeWidget;
 import dji.v5.ux.cameracore.widget.fpvinteraction.FPVInteractionWidget;
-import dji.v5.ux.core.base.CameraWidgetModel;
 import dji.v5.ux.core.base.DJISDKModel;
 import dji.v5.ux.core.base.SchedulerProvider;
 import dji.v5.ux.core.communication.BroadcastValues;
@@ -126,10 +130,25 @@ public class DefaultLayoutActivity extends AppCompatActivity {
 
     private CameraConfigStorageWidgetModel storageWidgetModel;
 
+
     private DJISDKModel djisdkModel;
     private ObservableInMemoryKeyedStore keyedStore;
 
     private boolean isConnected = false;
+
+    private CameraKey cameraKey;
+
+
+
+    private static int componentType = ComponentType.AIRCRAFT.ordinal();
+    static final DJIKeyInfo<LaserWorkMode> KeyLaserWorkMode =
+            new DJIKeyInfo<>(componentType, subComponentType.value(), "LaserWorkMode",
+                    new SingleValueConverter<>(LaserWorkMode.class, LaserWorkModeMsg.class))
+                    .canGet(true).canSet(true).canListen(true).canPerformAction(false).setIsEvent(false);
+
+    static final DJIKeyInfo<Boolean> KeyLaserMeasureEnabled =
+            new DJIKeyInfo<>(componentType,subComponentType.value(),"LaserMeasureEnabled", SingleValueConverter.BooleanConverter)
+                    .canGet(true).canSet(true).canListen(true).canPerformAction(false).setIsEvent(false).setInnerIdentifier("LaserMeasureEnable");
 
 
 
@@ -451,6 +470,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
             autoExposureLockWidget.updateCameraSource(cameraIndex, lensType);
         }
         if (focusModeWidget.getVisibility() == View.VISIBLE) {
+            Log.d("test","wide");
             focusModeWidget.updateCameraSource(cameraIndex, lensType);
         }
 //        if (focusExposureSwitchWidget.getVisibility() == View.VISIBLE) {
@@ -459,9 +479,13 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         if (cameraControlsWidget.getVisibility() == View.VISIBLE) {
             cameraControlsWidget.updateCameraSource(cameraIndex, lensType);
         }
+        //zoom
         if (focalZoomWidget.getVisibility() == View.VISIBLE) {
+            Log.d("test","zoom");
             focalZoomWidget.updateCameraSource(cameraIndex, lensType);
         }
+        //LRF
+        //if()
         if (horizontalSituationIndicatorWidget.getVisibility() == View.VISIBLE) {
             horizontalSituationIndicatorWidget.updateCameraSource(cameraIndex, lensType);
         }

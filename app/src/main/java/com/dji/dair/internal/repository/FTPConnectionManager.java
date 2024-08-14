@@ -25,6 +25,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.SocketException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import dji.v5.manager.datacenter.MediaDataCenter;
 import dji.v5.manager.datacenter.media.MediaFile;
@@ -47,7 +52,6 @@ public class FTPConnectionManager {
     private String password = "kgb0563";
     private boolean ftp_connected = false;
     private boolean onUpdate = false;
-    private boolean isNetwork = false;
     private FileOutputStream fos;
     private FileInputStream fis;
     private ExecutorService executorService;
@@ -59,7 +63,6 @@ public class FTPConnectionManager {
 
     //SD카드 삽입되면 이벤트 발생 감지하여 FTP 로그인
     public void connectFTP() throws IOException {
-
         if(!ftp_connected) {
             try {
                 ftpClient = new FTPClient();
@@ -81,15 +84,10 @@ public class FTPConnectionManager {
                     Log.e("test", "connectFTP catch : ", e);
                     ftpClient.disconnect();
                 }
-                Log.e("test", "connectFTP Error : ",  e);
-                Log.d("test","ftpClient.getReplyCode() : " + ftpClient.getReplyCode());
-
-
+                Log.e("test", "connectFTP Error : ", e);
             }
         }
     }
-
-
     //촬영 이벤트 감지 메서드
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void shootPhotoEvent(ShootPhotoEvent shootPhotoEvent) {
@@ -205,6 +203,10 @@ public class FTPConnectionManager {
         });
     }
 
+    //    public boolean checkNetwork() {
+//        ConnectivityManager connectivityManager = (ConnectivityManager)
+//                conte
+//    }
     @Subscribe
     public void onSDCardInserted(SDCardInsertedEvent event) throws IOException {
         connectFTP();
@@ -212,22 +214,22 @@ public class FTPConnectionManager {
 
     @Subscribe
     public void onSDCardRemoved(SDCardRemovedEvent event) throws IOException {
-//        Log.d("test", "FTP 연결 해제");
-//        Log.d("test","ftpClient??? "+ ftp_connected);
-//        if(ftpClient.isConnected() && ftp_connected) {
-//            try {
-//                Log.d("test", "trytrytrytry");
-//                ftpClient.logout();
-//                ftpClient.disconnect();
-//                ftp_connected = false;
-//            } catch (IOException e) {
-//                Log.d("test", "FTP 연결 해제 도중 문제 발생 " + e);
-//            }
-//        } else {
-//            Log.d("test","ftpClient.isConnected() " + ftpClient.isConnected());
-//            Log.d("test", "ftp_connected " + ftp_connected);
-//            Log.d("test","문제있다");
-//        }
+        Log.d("test", "FTP 연결 해제");
+        Log.d("test","ftpClient??? "+ ftp_connected);
+        if(ftpClient.isConnected() && ftp_connected) {
+            try {
+                Log.d("test", "trytrytrytry");
+                ftpClient.logout();
+                //ftpClient.disconnect();
+                ftp_connected = false;
+            } catch (IOException e) {
+                Log.d("test", "FTP 연결 해제 도중 문제 발생 " + e);
+            }
+        } else {
+            Log.d("test","ftpClient.isConnected() " + ftpClient.isConnected());
+            Log.d("test", "ftp_connected " + ftp_connected);
+            Log.d("test","문제있다");
+        }
 
 
     }

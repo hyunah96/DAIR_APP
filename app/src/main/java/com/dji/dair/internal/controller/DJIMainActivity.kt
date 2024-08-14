@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.dji.dair.internal.models.BaseMainActivityVm
 import com.dji.dair.internal.models.MSDKInfoVm
 import com.dji.dair.internal.models.MSDKManagerVM
+import com.dji.dair.internal.models.NetworkConnectionCheck
 import com.dji.dair.internal.models.globalViewModels
 import com.dji.dair.internal.repository.FTPConnectionManager
 import dji.v5.utils.common.PermissionUtil
@@ -52,10 +53,6 @@ abstract class DJIMainActivity: AppCompatActivity() {
     private val msdkManagerVM : MSDKManagerVM by globalViewModels()
     private val handler: Handler = Handler(Looper.getMainLooper())
     private var ftpManger: FTPConnectionManager? = null
-    private val checkNetworkState: CheckNetworkState by lazy {
-        CheckNetworkState(this)
-    }
-
 
 
     //추상 메서드 선언 , 하위 클래스인 DJIAircraftMainActivity 에서 구현
@@ -69,20 +66,19 @@ abstract class DJIMainActivity: AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        //setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_splash)
         Log.d("test","DJIMainActivity onCreate()")
         Log.d("test","build version : "+ Build.VERSION.SDK_INT);
 
         ftpManger = FTPConnectionManager()
-        checkNetworkState.register()
-
-        //로그인 버튼
-
+        val networkConnectionCheck = NetworkConnectionCheck(this)
+        if(networkConnectionCheck.isConnect){
+            Log.d("test","network is connect!!");
+        }
 
         // 일부 휴대폰은 시스템 데스크톱에서 액세스할 때 기본 유형의 활동이 다시 시작될 수 있습니다.
         // 이는 업계 표준이며 기본적으로 모든 앱에 필요한 사항이므로 확인이 필요합니다.
-        // 有一些手机从系统桌面进入的时候可能会重启main类型的activity
-        // 需要校验这种情况，业界标准做法，基本所有app都需要这个
         if (!isTaskRoot && intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN == intent.action) {
 
             finish()
@@ -108,12 +104,7 @@ abstract class DJIMainActivity: AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.d("test","onRequestPermissionsResult")
         if(checkPermission()) {
-            Log.d("test","checkPermission true ")
             handleAfterPermissionPermitted()
-        }
-        else
-        {
-            Log.d("test","checkPermission else ")
         }
     }
 
@@ -126,15 +117,10 @@ abstract class DJIMainActivity: AppCompatActivity() {
             observeSDKMananer()
             handleAfterPermissionPermitted()
         }
-        else {
-            Log.d("test","checkPermission : ${checkPermission()}")
-        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        checkNetworkState.unregister()
-        Log.d("test","onDestroy!!!!!!!!!")
     }
 
     private fun handleAfterPermissionPermitted() {
@@ -145,15 +131,13 @@ abstract class DJIMainActivity: AppCompatActivity() {
     private fun checkPermission(): Boolean{
         for(i in permissionArray.indices) {
 
-            Log.d("test"," i = " + permissionArray[i])
+            Log.d("test"," 권한 = " + permissionArray[i])
             if(!PermissionUtil.isPermissionGranted(this,permissionArray[i])) {
                 return false
             }
         }
         return true
     }
-
-
 
     //MSDK 연결을 관찰하고 제품 연결 상태나 변경 등을 감지
     private fun observeSDKMananer() {
@@ -162,7 +146,7 @@ abstract class DJIMainActivity: AppCompatActivity() {
             resultPair ->
             Log.d("test","resultPair : $resultPair")
             if(resultPair.first) {
-                Toast.makeText(this,"SDK 연결 성공",Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this,"SDK가 성공적으로 등록되었습니다",Toast.LENGTH_SHORT).show()
                 Log.d("test","observeSDKMananer, Register Success")
                 msdkInfoVm.initListener()
                 handler.postDelayed({
@@ -171,12 +155,10 @@ abstract class DJIMainActivity: AppCompatActivity() {
             }
             else {
                 Log.d("test","observeSDKMananer false")
+                Toast.makeText(this,"SDK 등록 실패 네트워크 연결을 확인해주세요",Toast.LENGTH_SHORT).show()
             }
         }
     }
-
-
-
     private fun checkPermissionAndRequest() {
         if(!checkPermission()) {
             requestPermission()
@@ -201,25 +183,33 @@ abstract class DJIMainActivity: AppCompatActivity() {
     }
 
 
-    private fun <T> enableButton(view:View , cl:Class<T>) {
-        Log.d("test","enableButton")
-        view.isEnabled = true
-        view.setOnClickListener{
-            Intent(this,cl).also {
-                Log.d("test","enableButton start")
-                    startActivity(it)
-            }
+//    private fun <T> enableButton(view:View , cl:Class<T>) {
+//        Log.d("test","enableButton")
+//        view.isEnabled = true
+//        view.setOnClickListener{
+//            Intent(this,cl).also {
+//                Log.d("test","enableButton start")
+//                    startActivity(it)
+//            }
+//
+//        }
+//    }
 
+    fun <T> enableDefaultLayout(cl: Class<T>){
+        Intent(this,cl).also {
+            Log.d("test","안녕!!!");
+            startActivity(it)
         }
+
     }
 
-    fun <T> enableDefaultLayout(cl: Class<T>) {
-        Log.d("test","enableDefaultLayout")
-        val login = findViewById<Button>(R.id.login_btn)
-        handler.postDelayed({
-            enableButton(login,cl)
-        },3000)
-    }
+//    fun <T> enableDefaultLayout(cl: Class<T>) {
+//        Log.d("test","enableDefaultLayout")
+//        val login = findViewById<Button>(R.id.login_btn)
+//        handler.postDelayed({
+//            enableButton(login,cl)
+//        },3000)
+//    }
 
 
 }
