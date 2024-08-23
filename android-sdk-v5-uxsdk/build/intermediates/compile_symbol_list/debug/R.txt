@@ -2730,6 +2730,7 @@ int id iv_rtk_icon 0x0
 int id iv_rtk_signal_search_iv 0x0
 int id iv_satellite_icon 0x0
 int id kmPerHour 0x0
+int id laserDistance 0x0
 int id layout_camera_mode_a 0x0
 int id layout_camera_mode_m 0x0
 int id layout_camera_mode_p 0x0

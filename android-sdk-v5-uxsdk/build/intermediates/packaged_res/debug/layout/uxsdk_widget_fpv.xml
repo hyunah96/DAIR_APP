@@ -78,6 +78,7 @@
         app:layout_constraintStart_toStartOf="@id/horizontal_offset"
         app:layout_constraintTop_toBottomOf="@id/textview_camera_name" />
 
+
     <dji.v5.ux.core.ui.GridLineView
         android:id="@+id/view_grid_line"
         android:layout_width="0dp"

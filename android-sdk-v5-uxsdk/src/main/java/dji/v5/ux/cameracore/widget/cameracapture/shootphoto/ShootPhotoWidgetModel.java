@@ -242,6 +242,7 @@ public class ShootPhotoWidgetModel extends WidgetModel implements ICameraIndex {
      * @return Completable to determine the status of the action
      */
     public Completable startShootPhoto() {
+        //사진 촬영이 가능한 상태인지 확인 false일 경우 즉시 완료되는 Completable 반환
         if (!canStartShootingPhoto.getValue()) {
             return Completable.complete();
         }

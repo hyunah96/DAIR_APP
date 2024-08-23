@@ -66,10 +66,12 @@ private const val TAG = "FPVWidget"
 private const val ORIGINAL_SCALE = 1f
 private const val LANDSCAPE_ROTATION_ANGLE = 0
 
+
+
 /**
  * This widget shows the video feed from the camera.
  */
-//@JvmOverloads 코틀린에서 생성한 함수를 자바 코드에서 오버로딩 가능
+//@JvmOverloads 코틀린에서 생성한 함수를 자바에서 오버로딩
 open class FPVWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -297,6 +299,7 @@ open class FPVWidget @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
+    //변화 감지 이곳에서 거리 변화 감지
     override fun reactToModelChanges() {
         addReaction(widgetModel.cameraNameProcessor.toFlowable()
             .observeOn(SchedulerProvider.ui())

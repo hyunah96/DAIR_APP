@@ -2732,6 +2732,7 @@ id iv_rtk_icon
 id iv_rtk_signal_search_iv
 id iv_satellite_icon
 id kmPerHour
+id laserDistance
 id layout_camera_mode_a
 id layout_camera_mode_m
 id layout_camera_mode_p

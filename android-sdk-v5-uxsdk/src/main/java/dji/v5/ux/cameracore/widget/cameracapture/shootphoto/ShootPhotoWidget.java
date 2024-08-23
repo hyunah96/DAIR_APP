@@ -250,6 +250,7 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
         return getResources().getDrawable(resourceId);
     }
 
+    //SD카드 장착 여부에 따른 촬영 설정
     private void updateCameraForegroundResource(@NonNull CameraPhotoState cameraPhotoState, @NonNull CameraPhotoStorageState cameraPhotoStorageState) {
         Drawable foregroundDrawable = updateCameraActionSound(cameraPhotoState);
 

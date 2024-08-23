@@ -1,2 +1,0 @@
-D dji/v5/ux/accessory/item/RtkGuidanceView$GuidanceMode
-D dji/v5/ux/core/ui/hsi/HSIMarkerLayer$IndicatorAlign

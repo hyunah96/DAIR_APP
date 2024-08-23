@@ -4,6 +4,7 @@ package dji.v5.ux.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -40,6 +41,9 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
 
   @NonNull
   public final ConstraintLayout fpvHolder;
+
+  @NonNull
+  public final TextView laserDistance;
 
   @NonNull
   public final SettingPanelWidget manualRightNavSetting;
@@ -105,7 +109,8 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
   public final TakeOffWidget widgetTakeOff;
 
   private UxsdkActivityDefaultLayoutBinding(@NonNull DrawerLayout rootView_,
-      @NonNull ConstraintLayout fpvHolder, @NonNull SettingPanelWidget manualRightNavSetting,
+      @NonNull ConstraintLayout fpvHolder, @NonNull TextView laserDistance,
+      @NonNull SettingPanelWidget manualRightNavSetting,
       @NonNull CameraNDVIPanelWidget panelNdviCamera, @NonNull TopBarPanelWidget panelTopBar,
       @NonNull CameraVisiblePanelWidget panelVisualCamera, @NonNull DrawerLayout rootView,
       @NonNull GimbalFineTuneWidget settingMenuGimbalFineTune,
@@ -124,6 +129,7 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
       @NonNull TakeOffWidget widgetTakeOff) {
     this.rootView_ = rootView_;
     this.fpvHolder = fpvHolder;
+    this.laserDistance = laserDistance;
     this.manualRightNavSetting = manualRightNavSetting;
     this.panelNdviCamera = panelNdviCamera;
     this.panelTopBar = panelTopBar;
@@ -177,6 +183,12 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
       id = R.id.fpv_holder;
       ConstraintLayout fpvHolder = ViewBindings.findChildViewById(rootView, id);
       if (fpvHolder == null) {
+        break missingId;
+      }
+
+      id = R.id.laserDistance;
+      TextView laserDistance = ViewBindings.findChildViewById(rootView, id);
+      if (laserDistance == null) {
         break missingId;
       }
 
@@ -303,9 +315,9 @@ public final class UxsdkActivityDefaultLayoutBinding implements ViewBinding {
       }
 
       return new UxsdkActivityDefaultLayoutBinding((DrawerLayout) rootView, fpvHolder,
-          manualRightNavSetting, panelNdviCamera, panelTopBar, panelVisualCamera, rootView_,
-          settingMenuGimbalFineTune, widgetAutoExposureLock, widgetCameraControls, widgetFocalZoom,
-          widgetFocusMode, widgetFpvFlightDisplayWidget, widgetFpvInteraction,
+          laserDistance, manualRightNavSetting, panelNdviCamera, panelTopBar, panelVisualCamera,
+          rootView_, settingMenuGimbalFineTune, widgetAutoExposureLock, widgetCameraControls,
+          widgetFocalZoom, widgetFocusMode, widgetFpvFlightDisplayWidget, widgetFpvInteraction,
           widgetHorizontalSituationIndicator, widgetLensControl, widgetPanelSystemStatusList,
           widgetPrimaryFpv, widgetRemainingFlightTime, widgetReturnToHome, widgetSecondaryFpv,
           widgetSimulatorControl, widgetTakeOff);

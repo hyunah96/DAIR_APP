@@ -22,11 +22,14 @@
  */
 
 package dji.v5.ux.sample.showcase.defaultlayout;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.security.Key;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -35,23 +38,39 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import dji.sdk.keyvalue.converter.DJIValueConverter;
 import dji.sdk.keyvalue.converter.SingleValueConverter;
 import dji.sdk.keyvalue.key.CameraKey;
+import dji.sdk.keyvalue.key.DJIKey;
 import dji.sdk.keyvalue.key.DJIKeyInfo;
+import dji.sdk.keyvalue.key.FlightControllerKey;
+import dji.sdk.keyvalue.key.KeyTools;
+import dji.sdk.keyvalue.msdkkeyinfo.KeyCameraModeRange;
+import dji.sdk.keyvalue.value.camera.CameraMode;
+import dji.sdk.keyvalue.value.camera.LaserMeasureInformation;
 import dji.sdk.keyvalue.value.camera.LaserWorkMode;
 import dji.sdk.keyvalue.value.camera.LaserWorkModeMsg;
 import dji.sdk.keyvalue.value.common.CameraLensType;
 import dji.sdk.keyvalue.value.common.ComponentIndexType;
+import dji.sdk.keyvalue.value.flightcontroller.ControlChannelMapping;
+import dji.sdk.keyvalue.value.gimbal.GimbalMode;
+import dji.sdk.keyvalue.value.gimbal.GimbalModeMsg;
+import dji.sdk.kmz.value.base.DJIValue;
+import dji.v5.common.callback.CommonCallbacks;
+import dji.v5.common.error.IDJIError;
 import dji.v5.common.video.channel.VideoChannelState;
 import dji.v5.common.video.channel.VideoChannelType;
 import dji.v5.common.video.interfaces.IVideoChannel;
 import dji.v5.common.video.interfaces.VideoChannelStateChangeListener;
 import dji.v5.common.video.stream.PhysicalDevicePosition;
 import dji.v5.common.video.stream.StreamSource;
-import dji.v5.manager.aircraft.upgrade.model.ComponentType;
+import dji.sdk.keyvalue.key.ComponentType;
+import dji.v5.manager.KeyManager;
 import dji.v5.manager.datacenter.MediaDataCenter;
 import dji.v5.network.DJINetworkManager;
 import dji.v5.network.IDJINetworkStatusListener;
+import dji.v5.utils.common.AndUtil;
 import dji.v5.utils.common.JsonUtil;
 import dji.v5.utils.common.LogUtils;
 import dji.v5.ux.R;
@@ -83,6 +102,7 @@ import dji.v5.ux.core.widget.hsi.PrimaryFlightDisplayWidget;
 import dji.v5.ux.core.widget.setting.SettingWidget;
 import dji.v5.ux.core.widget.simulator.SimulatorIndicatorWidget;
 import dji.v5.ux.core.widget.systemstatus.SystemStatusWidget;
+import dji.v5.ux.flight.flightparam.FpaView;
 import dji.v5.ux.gimbal.GimbalFineTuneWidget;
 import dji.v5.ux.map.MapWidget;
 import dji.v5.ux.training.simulatorcontrol.SimulatorControlWidget;
@@ -92,6 +112,9 @@ import dji.v5.ux.visualcamera.zoom.FocalZoomWidget;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import dji.v5.ux.visualcamera.storage.CameraConfigStorageWidgetModel;
+import androidx.annotation.NonNull;
+
+import com.airbnb.lottie.L;
 
 /**
  * 메인 레이아웃
@@ -124,10 +147,12 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     protected ConstraintLayout fpvParentView;
     private DrawerLayout mDrawerLayout;
     private TextView gimbalAdjustDone;
+    private TextView laserDistance;
     private GimbalFineTuneWidget gimbalFineTuneWidget;
     private PhysicalDevicePosition lastDevicePosition = PhysicalDevicePosition.UNKNOWN;
     private CameraLensType lastLensType = CameraLensType.UNKNOWN;
 
+    private LaserMeasureInformation laserMeasureInformation;
     private CameraConfigStorageWidgetModel storageWidgetModel;
 
 
@@ -136,22 +161,17 @@ public class DefaultLayoutActivity extends AppCompatActivity {
 
     private boolean isConnected = false;
 
-    private CameraKey cameraKey;
+    static final ComponentType componentType = ComponentType.GIMBAL;
+    static final ComponentType subComponentType = ComponentType.PRODUCT;
 
+//    final DJIKeyInfo<LaserMeasureInformation> KeyLaserMeasureInformation =
+//            new DJIKeyInfo<>(componentType.value(),subComponentType.value(),"LaserMeasureInformation", new DJIValueConverter<>(LaserMeasureInformation.class))
+//                    .canGet(true).canSet(false).canListen(true).canPerformAction(false).setIsEvent(false);
+//
 
-
-    private static int componentType = ComponentType.AIRCRAFT.ordinal();
-    static final DJIKeyInfo<LaserWorkMode> KeyLaserWorkMode =
-            new DJIKeyInfo<>(componentType, subComponentType.value(), "LaserWorkMode",
-                    new SingleValueConverter<>(LaserWorkMode.class, LaserWorkModeMsg.class))
-                    .canGet(true).canSet(true).canListen(true).canPerformAction(false).setIsEvent(false);
-
-    static final DJIKeyInfo<Boolean> KeyLaserMeasureEnabled =
-            new DJIKeyInfo<>(componentType,subComponentType.value(),"LaserMeasureEnabled", SingleValueConverter.BooleanConverter)
-                    .canGet(true).canSet(true).canListen(true).canPerformAction(false).setIsEvent(false).setInnerIdentifier("LaserMeasureEnable");
-
-
-
+//    static final DJIKeyInfo<LaserWorkMode> KeyLaserWorkMode =
+//            new DJIKeyInfo<>(componentType.value(),subComponentType.value(),"LaserWorkMode", new SingleValueConverter<>(LaserWorkMode.class,LaserWorkModeMsg.class))
+//                    .canGet(true).canSet(true).canListen(true).canPerformAction(false).setIsEvent(false);
 
     private CompositeDisposable compositeDisposable;
     private final DataProcessor<CameraSource> cameraSourceProcessor = DataProcessor.create(new CameraSource(PhysicalDevicePosition.UNKNOWN,
@@ -200,13 +220,14 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         gimbalAdjustDone = findViewById(R.id.fpv_gimbal_ok_btn);
         gimbalFineTuneWidget = findViewById(R.id.setting_menu_gimbal_fine_tune);
         //mapWidget = findViewById(R.id.widget_map);
+        laserDistance = findViewById(R.id.laserDistance);
 
         storageWidgetModel = new CameraConfigStorageWidgetModel(djisdkModel , keyedStore);
 
         djisdkModel = DJISDKModel.getInstance();
         keyedStore = ObservableInMemoryKeyedStore.getInstance();
 
-        initClickListener();
+
 
         MediaDataCenter.getInstance().getVideoStreamManager().addStreamSourcesListener(
                 sources -> {
@@ -225,7 +246,8 @@ public class DefaultLayoutActivity extends AppCompatActivity {
             }
         });
 
-
+        initClickListener();
+        laserStateListener();
 
 
         //小surfaceView放置在顶部，避免被大的遮挡
@@ -249,15 +271,58 @@ public class DefaultLayoutActivity extends AppCompatActivity {
 //        mapWidget.onCreate(savedInstanceState);
 //        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 
+
+
+
         //实现RTK监测网络，并自动重连机制
         DJINetworkManager.getInstance().addNetworkStatusListener(networkStatusListener);
 
     }
+
     private void checkNetwork() {
         if(isConnected){
             Toast.makeText(getApplicationContext(),"인터넷에 연결되어 있지 않으면 FTP서버에 사진을 저장할 수 없음 ",Toast.LENGTH_SHORT);
         }
     }
+
+    private void laserStateListener() {
+
+            KeyManager.getInstance().setValue(KeyTools.createKey(CameraKey.KeyLaserWorkMode), LaserWorkMode.OPEN_ALWAYS, new CommonCallbacks.CompletionCallback() {
+                @Override
+                public void onSuccess() {
+                    Log.d("test", "onsuccess!!!!222");
+                    final DJIKeyInfo<LaserMeasureInformation> KeyLaserMeasureInformation =
+                            new DJIKeyInfo<>(componentType.value(), subComponentType.value(), "LaserMeasureInformation", new DJIValueConverter<>(LaserMeasureInformation.class))
+                                    .canGet(true).canSet(false).canListen(true).canPerformAction(false).setIsEvent(false);
+
+                    var laserCameraKey =    KeyManager.getInstance().getValue(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation));
+                    Log.d("test", "laserCameraKey!!!!");
+
+                    //laserDistance.setText(String.valueOf(laserCameraKey.getDistance()));
+
+                    KeyManager.getInstance().listen(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation),this,(oldValue, newValue) ->
+                    {
+                        //여기서 미터값 갱신 해오면서 촬영 이벤트 전달
+                        newValue = KeyManager.getInstance().getValue(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation));
+                        if(newValue!= null) {
+
+                            laserDistance.setText(String.format("%.1f", newValue.getDistance()) + "m");
+
+                            Log.d("test", "laserDistance.setText!!!!" + newValue.getDistance() + "m");
+                        }
+                    });
+                }
+
+
+                @Override
+                public void onFailure(@NonNull IDJIError error) {
+                    Log.d("test", "onFailure!!!!");
+                }
+            });
+
+    }
+
+
 
 
     private void isGimableAdjustClicked(BroadcastValues broadcastValues) {
@@ -325,30 +390,30 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         compositeDisposable.add(systemStatusListPanelWidget.closeButtonPressed()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pressed -> {
-                    if (pressed) {
-                        ViewExtensions.hide(systemStatusListPanelWidget);
-                    }
-                },
-                    throwable -> {
-                        Log.d("test","test");
+                            if (pressed) {
+                                ViewExtensions.hide(systemStatusListPanelWidget);
+                            }
+                        },
+                        throwable -> {
+                            Log.d("test","test");
                         }
                 ));
         compositeDisposable.add(simulatorControlWidget.getUIStateUpdates()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(simulatorControlWidgetState -> {
-                    if (simulatorControlWidgetState instanceof SimulatorControlWidget.UIState.VisibilityUpdated) {
-                        if (((SimulatorControlWidget.UIState.VisibilityUpdated) simulatorControlWidgetState).isVisible()) {
-                            hideOtherPanels(simulatorControlWidget);
-                        }
-                    }
-                },
-                error -> Log.d("test","simulatorControlWidgetState error")));
+                            if (simulatorControlWidgetState instanceof SimulatorControlWidget.UIState.VisibilityUpdated) {
+                                if (((SimulatorControlWidget.UIState.VisibilityUpdated) simulatorControlWidgetState).isVisible()) {
+                                    hideOtherPanels(simulatorControlWidget);
+                                }
+                            }
+                        },
+                        error -> Log.d("test","simulatorControlWidgetState error")));
         compositeDisposable.add(cameraSourceProcessor.toFlowable()
                 .observeOn(SchedulerProvider.io())
                 .throttleLast(500, TimeUnit.MILLISECONDS)
                 .subscribeOn(SchedulerProvider.io())
                 .subscribe(result -> runOnUiThread(() -> onCameraSourceUpdated(result.devicePosition, result.lensType)),
-                           error -> Log.d("test","camera source error"))
+                        error -> Log.d("test","camera source error"))
         );
         compositeDisposable.add(ObservableInMemoryKeyedStore.getInstance()
                 .addObserver(UXKeys.create(GlobalPreferenceKeys.GIMBAL_ADJUST_CLICKED))
@@ -359,7 +424,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
 
     };
 
-   @Override
+    @Override
     protected void onPause() {
         if (compositeDisposable != null) {
             compositeDisposable.dispose();
@@ -441,6 +506,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
             secondaryChannel.removeVideoChannelStateChangeListener(secondaryChannelStateListener);
         }
     }
+
 
     private void onCameraSourceUpdated(PhysicalDevicePosition devicePosition, CameraLensType lensType) {
         LogUtils.i(TAG, devicePosition, lensType);
@@ -548,7 +614,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
             mDrawerLayout.closeDrawers();
         } else {
-           super.onBackPressed();
+            super.onBackPressed();
         }
     }
 }

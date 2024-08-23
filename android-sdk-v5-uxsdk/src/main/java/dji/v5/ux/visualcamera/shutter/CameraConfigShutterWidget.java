@@ -28,6 +28,7 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
@@ -116,6 +117,7 @@ public class CameraConfigShutterWidget extends ConstraintLayoutWidget<Object> im
 
     //region Reactions to model
     private void updateUI(@NonNull CameraShutterSpeed shutterSpeed) {
+        Log.d("test","shutterSpeed!!!" + shutterSpeed);
         shutterValueTextView.setText(CameraUtil.shutterSpeedDisplayName(shutterSpeed));
     }
 
