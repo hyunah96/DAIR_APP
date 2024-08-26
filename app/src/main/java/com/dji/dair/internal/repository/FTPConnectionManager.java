@@ -155,6 +155,7 @@ public class FTPConnectionManager {
             @Override
             public void onProgress(long total, long current) {
                 double num = (double) current/total * 100;
+                Log.d("test","파일명 : " + latestFile.getFileName() + " 다운로드 : " + num);
             }
             @Override
             public void onRealtimeDataUpdate(byte[] data, long position) {

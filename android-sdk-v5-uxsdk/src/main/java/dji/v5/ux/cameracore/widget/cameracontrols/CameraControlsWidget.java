@@ -78,7 +78,7 @@ public class CameraControlsWidget extends ConstraintLayoutWidget<Object> impleme
         inflate(context, R.layout.uxsdk_widget_camera_controls, this);
         //setBackgroundResource 배경 설정
         setBackgroundResource(R.drawable.uxsdk_background_black_rectangle);
-        //메서드 초기화
+        //촬영
         cameraCaptureWidget = findViewById(R.id.widget_camera_control_camera_capture);
         //사진,영상 변환 스위치
         photoVideoSwitchWidget = findViewById(R.id.widget_camera_control_photo_video_switch);

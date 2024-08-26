@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
@@ -25,14 +26,18 @@ public final class UxsdkWidgetShootPhotoBinding implements ViewBinding {
   public final ImageView imageViewStorageStatusOverlay;
 
   @NonNull
+  public final TextView laserDistance;
+
+  @NonNull
   public final ProgressRingView progressRingViewBorder;
 
   private UxsdkWidgetShootPhotoBinding(@NonNull View rootView, @NonNull ImageView imageViewCenter,
-      @NonNull ImageView imageViewStorageStatusOverlay,
+      @NonNull ImageView imageViewStorageStatusOverlay, @NonNull TextView laserDistance,
       @NonNull ProgressRingView progressRingViewBorder) {
     this.rootView = rootView;
     this.imageViewCenter = imageViewCenter;
     this.imageViewStorageStatusOverlay = imageViewStorageStatusOverlay;
+    this.laserDistance = laserDistance;
     this.progressRingViewBorder = progressRingViewBorder;
   }
 
@@ -70,6 +75,12 @@ public final class UxsdkWidgetShootPhotoBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.laserDistance;
+      TextView laserDistance = ViewBindings.findChildViewById(rootView, id);
+      if (laserDistance == null) {
+        break missingId;
+      }
+
       id = R.id.progress_ring_view_border;
       ProgressRingView progressRingViewBorder = ViewBindings.findChildViewById(rootView, id);
       if (progressRingViewBorder == null) {
@@ -77,7 +88,7 @@ public final class UxsdkWidgetShootPhotoBinding implements ViewBinding {
       }
 
       return new UxsdkWidgetShootPhotoBinding(rootView, imageViewCenter,
-          imageViewStorageStatusOverlay, progressRingViewBorder);
+          imageViewStorageStatusOverlay, laserDistance, progressRingViewBorder);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -83,19 +83,19 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!---->
-        <TextView
-            android:id="@+id/laserDistance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
-            android:background="@color/uxsdk_fpv_text_background"
-            android:gravity="center_horizontal"
-            android:paddingStart="1dp"
-            android:paddingEnd="1dp"
-            android:textColor="@color/uxsdk_white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/widget_remaining_flight_time"
-            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"/>
+<!--        <TextView-->
+<!--            android:id="@+id/laserDistance"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="1dp"-->
+<!--            android:background="@color/uxsdk_fpv_text_background"-->
+<!--            android:gravity="center_horizontal"-->
+<!--            android:paddingStart="1dp"-->
+<!--            android:paddingEnd="1dp"-->
+<!--            android:textColor="@color/uxsdk_white"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/widget_remaining_flight_time"-->
+<!--            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"/>-->
 
         <!--상단바 (기체 모드, 시스템 상태, 시뮬레이션 , 배터리 , 신호 등-->
         <dji.v5.ux.core.panel.topbar.TopBarPanelWidget

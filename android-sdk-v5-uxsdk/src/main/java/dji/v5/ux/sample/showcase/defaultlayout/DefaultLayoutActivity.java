@@ -77,6 +77,7 @@ import dji.v5.ux.R;
 import dji.v5.ux.accessory.RTKStartServiceHelper;
 import dji.v5.ux.cameracore.util.CameraActionSound;
 import dji.v5.ux.cameracore.widget.autoexposurelock.AutoExposureLockWidget;
+import dji.v5.ux.cameracore.widget.cameracapture.shootphoto.ShootPhotoEvent;
 import dji.v5.ux.cameracore.widget.cameracontrols.CameraControlsWidget;
 import dji.v5.ux.cameracore.widget.cameracontrols.lenscontrol.LensControlWidget;
 import dji.v5.ux.cameracore.widget.focusexposureswitch.FocusExposureSwitchWidget;
@@ -102,6 +103,7 @@ import dji.v5.ux.core.widget.hsi.PrimaryFlightDisplayWidget;
 import dji.v5.ux.core.widget.setting.SettingWidget;
 import dji.v5.ux.core.widget.simulator.SimulatorIndicatorWidget;
 import dji.v5.ux.core.widget.systemstatus.SystemStatusWidget;
+import dji.v5.ux.flight.flightparam.DistanceLimitWidgetModel;
 import dji.v5.ux.flight.flightparam.FpaView;
 import dji.v5.ux.gimbal.GimbalFineTuneWidget;
 import dji.v5.ux.map.MapWidget;
@@ -115,6 +117,8 @@ import dji.v5.ux.visualcamera.storage.CameraConfigStorageWidgetModel;
 import androidx.annotation.NonNull;
 
 import com.airbnb.lottie.L;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * 메인 레이아웃
@@ -147,13 +151,14 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     protected ConstraintLayout fpvParentView;
     private DrawerLayout mDrawerLayout;
     private TextView gimbalAdjustDone;
-    private TextView laserDistance;
+    //private TextView laserDistance;
     private GimbalFineTuneWidget gimbalFineTuneWidget;
     private PhysicalDevicePosition lastDevicePosition = PhysicalDevicePosition.UNKNOWN;
     private CameraLensType lastLensType = CameraLensType.UNKNOWN;
 
-    private LaserMeasureInformation laserMeasureInformation;
     private CameraConfigStorageWidgetModel storageWidgetModel;
+    //private DistanceLimitWidgetModel widgetModel = new DistanceLimitWidgetModel(DJISDKModel.getInstance(), ObservableInMemoryKeyedStore.getInstance());
+    //KeyManager.getInstance().listen(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation), this, (oldValue, newValue) ->
 
 
     private DJISDKModel djisdkModel;
@@ -161,8 +166,8 @@ public class DefaultLayoutActivity extends AppCompatActivity {
 
     private boolean isConnected = false;
 
-    static final ComponentType componentType = ComponentType.GIMBAL;
-    static final ComponentType subComponentType = ComponentType.PRODUCT;
+//    static final ComponentType componentType = ComponentType.GIMBAL;
+//    static final ComponentType subComponentType = ComponentType.PRODUCT;
 
 //    final DJIKeyInfo<LaserMeasureInformation> KeyLaserMeasureInformation =
 //            new DJIKeyInfo<>(componentType.value(),subComponentType.value(),"LaserMeasureInformation", new DJIValueConverter<>(LaserMeasureInformation.class))
@@ -194,7 +199,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("test","DefaultLayoutActivity onCreate");
+        Log.d("test","DefaultLayoutActivity onCreate11");
 
         setContentView(R.layout.uxsdk_activity_default_layout);
         fpvParentView = findViewById(R.id.fpv_holder);
@@ -220,7 +225,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         gimbalAdjustDone = findViewById(R.id.fpv_gimbal_ok_btn);
         gimbalFineTuneWidget = findViewById(R.id.setting_menu_gimbal_fine_tune);
         //mapWidget = findViewById(R.id.widget_map);
-        laserDistance = findViewById(R.id.laserDistance);
+        //laserDistance = findViewById(R.id.laserDistance);
 
         storageWidgetModel = new CameraConfigStorageWidgetModel(djisdkModel , keyedStore);
 
@@ -247,7 +252,7 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         });
 
         initClickListener();
-        laserStateListener();
+        //laserStateListener();
 
 
         //小surfaceView放置在顶部，避免被大的遮挡
@@ -285,42 +290,52 @@ public class DefaultLayoutActivity extends AppCompatActivity {
         }
     }
 
-    private void laserStateListener() {
-
-            KeyManager.getInstance().setValue(KeyTools.createKey(CameraKey.KeyLaserWorkMode), LaserWorkMode.OPEN_ALWAYS, new CommonCallbacks.CompletionCallback() {
-                @Override
-                public void onSuccess() {
-                    Log.d("test", "onsuccess!!!!222");
-                    final DJIKeyInfo<LaserMeasureInformation> KeyLaserMeasureInformation =
-                            new DJIKeyInfo<>(componentType.value(), subComponentType.value(), "LaserMeasureInformation", new DJIValueConverter<>(LaserMeasureInformation.class))
-                                    .canGet(true).canSet(false).canListen(true).canPerformAction(false).setIsEvent(false);
-
-                    var laserCameraKey =    KeyManager.getInstance().getValue(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation));
-                    Log.d("test", "laserCameraKey!!!!");
-
-                    //laserDistance.setText(String.valueOf(laserCameraKey.getDistance()));
-
-                    KeyManager.getInstance().listen(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation),this,(oldValue, newValue) ->
-                    {
-                        //여기서 미터값 갱신 해오면서 촬영 이벤트 전달
-                        newValue = KeyManager.getInstance().getValue(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation));
-                        if(newValue!= null) {
-
-                            laserDistance.setText(String.format("%.1f", newValue.getDistance()) + "m");
-
-                            Log.d("test", "laserDistance.setText!!!!" + newValue.getDistance() + "m");
-                        }
-                    });
-                }
-
-
-                @Override
-                public void onFailure(@NonNull IDJIError error) {
-                    Log.d("test", "onFailure!!!!");
-                }
-            });
-
-    }
+//    private void laserStateListener() {
+//
+//        try {
+//            KeyManager.getInstance().setValue(KeyTools.createKey(CameraKey.KeyLaserWorkMode), LaserWorkMode.OPEN_ALWAYS, new CommonCallbacks.CompletionCallback() {
+//                @Override
+//                public void onSuccess() {
+//                    Log.d("test", "onsuccess!!!!333");
+//                    final DJIKeyInfo<LaserMeasureInformation> KeyLaserMeasureInformation =
+//                            new DJIKeyInfo<>(componentType.value(), subComponentType.value(), "LaserMeasureInformation", new DJIValueConverter<>(LaserMeasureInformation.class))
+//                                    .canGet(true).canSet(false).canListen(true).canPerformAction(false).setIsEvent(false);
+//
+//                    var laserCameraKey = KeyManager.getInstance().getValue(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation));
+//                    Log.d("test", "laserCameraKey!!!!");
+//
+//                    //laserDistance.setText(String.valueOf(laserCameraKey.getDistance()));
+//
+//                    KeyManager.getInstance().listen(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation), this, (oldValue, newValue) ->
+//                    {
+//                        //여기서 미터값 갱신 해오면서 촬영 이벤트 전달
+//                        newValue = KeyManager.getInstance().getValue(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation));
+//                        if (newValue != null) {
+//
+//
+//
+//                            laserDistance.setText(String.format("%.1f", newValue.getDistance()) + "m");
+//
+//                            Log.d("test", "laserDistance.setText!!!!" + newValue.getDistance() + "m");
+////                            if(newValue.getDistance() == 5.4){
+////
+////
+////                            }
+//                        }
+//                    });
+//                }
+//
+//
+//                @Override
+//                public void onFailure(@NonNull IDJIError error) {
+//                    Log.d("test", "onFailure!!!!");
+//                }
+//            });
+//        }catch (Exception e){
+//            Log.d("test","원인 : "+ e);
+//        }
+//
+//    }
 
 
 

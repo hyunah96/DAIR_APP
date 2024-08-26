@@ -216,6 +216,7 @@ open class FPVWidget @JvmOverloads constructor(
             cameraSideTextView.background = drawable
         }
 
+
     /**
      * The vertical alignment of the camera name and side text views
      */

@@ -117,7 +117,7 @@ public class CameraConfigShutterWidget extends ConstraintLayoutWidget<Object> im
 
     //region Reactions to model
     private void updateUI(@NonNull CameraShutterSpeed shutterSpeed) {
-        Log.d("test","shutterSpeed!!!" + shutterSpeed);
+        //Log.d("test","shutterSpeed!!!" + shutterSpeed);
         shutterValueTextView.setText(CameraUtil.shutterSpeedDisplayName(shutterSpeed));
     }
 

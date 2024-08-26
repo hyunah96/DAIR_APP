@@ -22,20 +22,29 @@
  */
 package dji.v5.ux.core.widget.fpv
 
+import android.provider.ContactsContract.Data
 import android.util.Log
+import dji.sdk.keyvalue.converter.DJIValueConverter
 import dji.sdk.keyvalue.key.CameraKey
+import dji.sdk.keyvalue.key.ComponentType
+import dji.sdk.keyvalue.key.DJIKeyInfo
+import dji.sdk.keyvalue.key.KeyTools
 import dji.sdk.keyvalue.value.camera.CameraOrientation
 import dji.sdk.keyvalue.value.camera.CameraVideoStreamSourceType
+import dji.sdk.keyvalue.value.camera.LaserMeasureInformation
+import dji.sdk.keyvalue.value.camera.LaserWorkMode
 import dji.sdk.keyvalue.value.camera.VideoResolutionFrameRate
 import dji.sdk.keyvalue.value.common.CameraLensType
 import dji.sdk.keyvalue.value.common.ComponentIndexType
+import dji.v5.common.callback.CommonCallbacks.CompletionCallback
+import dji.v5.common.error.IDJIError
 import dji.v5.common.video.channel.VideoChannelType
 import dji.v5.common.video.interfaces.IVideoChannel
 import dji.v5.common.video.stream.StreamSource
 import dji.v5.et.create
 import dji.v5.et.createCamera
+import dji.v5.manager.KeyManager
 import dji.v5.manager.datacenter.MediaDataCenter
-import dji.v5.manager.interfaces.IMediaManager
 import dji.v5.utils.common.JsonUtil
 import dji.v5.utils.common.LogUtils
 import dji.v5.ux.core.base.DJISDKModel
@@ -147,7 +156,6 @@ class FPVWidgetModel(
         updateCameraDisplay()
         onStreamSourceUpdated()
     }
-
 
     public override fun updateStates() {
         //无需实现

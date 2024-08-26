@@ -32,7 +32,10 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,12 +46,23 @@ import androidx.annotation.Nullable;
 
 import org.greenrobot.eventbus.EventBus;
 
+import dji.sdk.keyvalue.converter.DJIValueConverter;
+import dji.sdk.keyvalue.key.CameraKey;
+import dji.sdk.keyvalue.key.ComponentType;
+import dji.sdk.keyvalue.key.DJIKey;
+import dji.sdk.keyvalue.key.DJIKeyInfo;
+import dji.sdk.keyvalue.key.KeyTools;
 import dji.sdk.keyvalue.value.camera.CameraShootPhotoMode;
 import dji.sdk.keyvalue.value.camera.CameraStorageLocation;
+import dji.sdk.keyvalue.value.camera.LaserMeasureInformation;
+import dji.sdk.keyvalue.value.camera.LaserWorkMode;
 import dji.sdk.keyvalue.value.camera.SDCardLoadState;
 import dji.sdk.keyvalue.value.camera.SSDOperationState;
 import dji.sdk.keyvalue.value.common.CameraLensType;
 import dji.sdk.keyvalue.value.common.ComponentIndexType;
+import dji.v5.common.callback.CommonCallbacks;
+import dji.v5.common.error.IDJIError;
+import dji.v5.manager.KeyManager;
 import dji.v5.ux.R;
 import dji.v5.ux.cameracore.ui.ProgressRingView;
 import dji.v5.ux.cameracore.util.CameraActionSound;
@@ -81,6 +95,7 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
     private ProgressRingView borderProgressRingView;
     private ImageView centerImageView;
     private ImageView storageStatusOverlayImageView;
+    private TextView laserDistance;
     private Drawable startShootPhotoDrawable;
     private Drawable stopShootPhotoDrawable;
     private Drawable startShootPhotoHasselbladDrawable;
@@ -93,6 +108,8 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
     private Map<StorageIconState, Drawable> storageSSDIconMap;
     private Map<StorageIconState, Drawable> storageSDCardIconMap;
     private CameraActionSound cameraActionSound;
+    static final ComponentType componentType = ComponentType.GIMBAL;
+    static final ComponentType subComponentType = ComponentType.PRODUCT;
     //endregion
 
     //region Lifecycle
@@ -115,6 +132,7 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
         borderProgressRingView = findViewById(R.id.progress_ring_view_border);
         centerImageView = findViewById(R.id.image_view_center);
         storageStatusOverlayImageView = findViewById(R.id.image_view_storage_status_overlay);
+        laserDistance = findViewById(R.id.laserDistance);
         storageInternalIconMap = new HashMap<>();
         storageSSDIconMap = new HashMap<>();
         storageSDCardIconMap = new HashMap<>();
@@ -123,6 +141,7 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
             centerImageView.setOnClickListener(this);
             widgetModel = new ShootPhotoWidgetModel(DJISDKModel.getInstance(), ObservableInMemoryKeyedStore.getInstance());
             buttonDownModel = new RemoteControllerButtonDownModel(DJISDKModel.getInstance(), ObservableInMemoryKeyedStore.getInstance());
+            laserStateListener();
         }
         initDefaults();
         if (attrs != null) {
@@ -146,6 +165,59 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
             buttonDownModel.cleanup();
         }
         super.onDetachedFromWindow();
+    }
+
+
+    private void laserStateListener() {
+
+        try {
+            KeyManager.getInstance().setValue(KeyTools.createKey(CameraKey.KeyLaserWorkMode), LaserWorkMode.OPEN_ALWAYS, new CommonCallbacks.CompletionCallback() {
+                @Override
+                public void onSuccess() {
+                    Log.d("test", "onsuccess!!!!333");
+                    final DJIKeyInfo<LaserMeasureInformation> KeyLaserMeasureInformation =
+                            new DJIKeyInfo<>(componentType.value(), subComponentType.value(), "LaserMeasureInformation", new DJIValueConverter<>(LaserMeasureInformation.class))
+                                    .canGet(true).canSet(false).canListen(true).canPerformAction(false).setIsEvent(false);
+
+                    var laserCameraKey = KeyManager.getInstance().getValue(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation));
+                    Log.d("test", "laserCameraKey!!!!");
+
+                    //laserDistance.setText(String.valueOf(laserCameraKey.getDistance()));
+
+                    KeyManager.getInstance().listen(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation), this, (oldValue, newValue) ->
+                    {
+                        //여기서 미터값 갱신 해오면서 촬영 이벤트 전달
+                        newValue = KeyManager.getInstance().getValue(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation));
+                        if (newValue != null) {
+
+
+
+                            //laserDistance.setText(String.format("%.1f", newValue.getDistance()) + "m");("%.1f",newValue.getDistance()));
+                            //double distance = Integer.parseInt(String.format
+                            BigDecimal bd = new BigDecimal(newValue.getDistance());
+                            laserDistance.setText(bd.setScale(1 , BigDecimal.ROUND_FLOOR) + "m");
+                            double distance = Double.parseDouble(String.valueOf(bd.setScale(2, BigDecimal.ROUND_HALF_UP)));
+
+
+                            if(distance == 5.4){
+                                Log.d("test","5.4!");
+                                Toast.makeText(getContext().getApplicationContext(), "5,4m",Toast.LENGTH_SHORT);
+                                actionOnShootingPhoto();
+                            }
+                        }
+                    });
+                }
+
+
+                @Override
+                public void onFailure(@NonNull IDJIError error) {
+                    Log.d("test", "onFailure!!!!");
+                }
+            });
+        }catch (Exception e){
+            Log.d("test","원인 : "+ e);
+        }
+
     }
 
     @Override
@@ -223,6 +295,11 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
                 }, RxUtil.logErrorConsumer(TAG,"Start Stop Shoot Photo")));
 
     }
+
+
+
+
+
 //기존 코드
 //    private void actionOnShootingPhoto() {
 //        if (!widgetModel.isPhotoMode()) {
