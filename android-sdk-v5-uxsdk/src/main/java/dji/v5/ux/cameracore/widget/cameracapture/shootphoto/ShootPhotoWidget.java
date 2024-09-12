@@ -199,9 +199,9 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
                             double distance = Double.parseDouble(String.valueOf(bd.setScale(2, BigDecimal.ROUND_HALF_UP)));
 
 
-                            if(distance == 5.4){
-                                Log.d("test","5.4!");
-                                Toast.makeText(getContext().getApplicationContext(), "5,4m",Toast.LENGTH_SHORT);
+                            if(distance == 70){
+                                Log.d("test","70m");
+                                //Toast.makeText(getContext().getApplicationContext(), "5,4m",Toast.LENGTH_SHORT);
                                 actionOnShootingPhoto();
                             }
                         }
