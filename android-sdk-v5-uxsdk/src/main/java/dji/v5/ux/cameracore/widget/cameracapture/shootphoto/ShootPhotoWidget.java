@@ -100,6 +100,8 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
     private Drawable stopShootPhotoDrawable;
     private Drawable startShootPhotoHasselbladDrawable;
     private Drawable stopShootPhotoHasselbladDrawable;
+
+    private double previousDistance = -1;
     @ColorInt
     private int progressRingHasselbladColor;
     @ColorInt
@@ -174,36 +176,43 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
             KeyManager.getInstance().setValue(KeyTools.createKey(CameraKey.KeyLaserWorkMode), LaserWorkMode.OPEN_ALWAYS, new CommonCallbacks.CompletionCallback() {
                 @Override
                 public void onSuccess() {
-                    Log.d("test", "onsuccess!!!!333");
+                    Log.d("test", "onsuccess");
                     final DJIKeyInfo<LaserMeasureInformation> KeyLaserMeasureInformation =
                             new DJIKeyInfo<>(componentType.value(), subComponentType.value(), "LaserMeasureInformation", new DJIValueConverter<>(LaserMeasureInformation.class))
                                     .canGet(true).canSet(false).canListen(true).canPerformAction(false).setIsEvent(false);
-
-                    var laserCameraKey = KeyManager.getInstance().getValue(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation));
-                    Log.d("test", "laserCameraKey!!!!");
-
-                    //laserDistance.setText(String.valueOf(laserCameraKey.getDistance()));
-
                     KeyManager.getInstance().listen(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation), this, (oldValue, newValue) ->
                     {
-                        //여기서 미터값 갱신 해오면서 촬영 이벤트 전달
+                        //여기서 미터값 갱신해오면서 촬영 이벤트 전달
                         newValue = KeyManager.getInstance().getValue(KeyTools.createKey(CameraKey.KeyLaserMeasureInformation));
                         if (newValue != null) {
+                            // 최소 거리 3m 이하
+                            final double min_distance = 3.0;
 
-
-
-                            //laserDistance.setText(String.format("%.1f", newValue.getDistance()) + "m");("%.1f",newValue.getDistance()));
-                            //double distance = Integer.parseInt(String.format
-                            BigDecimal bd = new BigDecimal(newValue.getDistance());
-                            laserDistance.setText(bd.setScale(1 , BigDecimal.ROUND_FLOOR) + "m");
-                            double distance = Double.parseDouble(String.valueOf(bd.setScale(2, BigDecimal.ROUND_HALF_UP)));
-
-
-                            if(distance == 70){
-                                Log.d("test","70m");
-                                //Toast.makeText(getContext().getApplicationContext(), "5,4m",Toast.LENGTH_SHORT);
+                            double currentDistance = newValue.getDistance();
+                            double test = Math.abs(currentDistance - previousDistance);
+                            if(previousDistance == -1){
+                                previousDistance = currentDistance;
+                            }
+                            //현재 값이랑 이전 값을 뺐을때 편차가 커 근데 양수일때도 있고 음수일 때도 있어 절대값
+                            if(currentDistance < min_distance || Math.abs(currentDistance - previousDistance) >= 10){
+                                Log.d("test","편차가 커");
+                                Log.d("test","currentDistance - previousDistance ?? " +test );
+                                laserDistance.setText("해당 없음");
+                            }
+                            else {
+                                laserDistance.setText(String.format("%.2f m", currentDistance));
                                 actionOnShootingPhoto();
                             }
+
+
+                            //시작
+                            //BigDecimal bd = new BigDecimal(newValue.getDistance());
+                            //laserDistance.setText(bd.setScale(1 , BigDecimal.ROUND_FLOOR) + "m");
+                            //double distance = Double.parseDouble(String.valueOf(bd.setScale(2, BigDecimal.ROUND_HALF_UP)));
+                            //끝
+//                            if(distance >= 60 && distance <= 70){
+//                                actionOnShootingPhoto();
+//                            }
                         }
                     });
                 }
