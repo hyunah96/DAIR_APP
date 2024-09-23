@@ -103,6 +103,8 @@ dependencies {
 
     implementation('org.greenrobot:eventbus:3.0.0')
 
+    implementation ('com.jcraft:jsch:0.1.55')
+
 
     //Apache Commonms Net 라이브러리
     implementation 'commons-net:commons-net:3.8.0'

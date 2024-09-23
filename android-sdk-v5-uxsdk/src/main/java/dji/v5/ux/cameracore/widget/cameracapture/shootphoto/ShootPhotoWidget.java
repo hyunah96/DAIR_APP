@@ -176,7 +176,7 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
             KeyManager.getInstance().setValue(KeyTools.createKey(CameraKey.KeyLaserWorkMode), LaserWorkMode.OPEN_ALWAYS, new CommonCallbacks.CompletionCallback() {
                 @Override
                 public void onSuccess() {
-                    Log.d("test", "onsuccess");
+                    Log.d("test", "laser onsuccess");
                     final DJIKeyInfo<LaserMeasureInformation> KeyLaserMeasureInformation =
                             new DJIKeyInfo<>(componentType.value(), subComponentType.value(), "LaserMeasureInformation", new DJIValueConverter<>(LaserMeasureInformation.class))
                                     .canGet(true).canSet(false).canListen(true).canPerformAction(false).setIsEvent(false);
@@ -197,12 +197,19 @@ public class ShootPhotoWidget extends ConstraintLayoutWidget<Object> implements 
                             if(currentDistance < min_distance || Math.abs(currentDistance - previousDistance) >= 10){
                                 Log.d("test","편차가 커");
                                 Log.d("test","currentDistance - previousDistance ?? " +test );
+                                Log.d("test","currentDistance" + currentDistance);
                                 laserDistance.setText("해당 없음");
                             }
+//                                else if (currentDistance >= 5.0 && currentDistance <= 6.0) {
+//                                    actionOnShootingPhoto();
+//                                    laserDistance.setText(String.format("%.2f m", currentDistance));
+//                                }
                             else {
-                                laserDistance.setText(String.format("%.2f m", currentDistance));
+                                if(currentDistance >= 5.0 && currentDistance <= 6.0){
                                 actionOnShootingPhoto();
+                                }
                             }
+                            laserDistance.setText(String.format("%.2f m", currentDistance));
 
 
                             //시작

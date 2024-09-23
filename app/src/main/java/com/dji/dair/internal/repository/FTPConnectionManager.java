@@ -3,6 +3,10 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Environment;
 import android.os.Handler;
+
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -47,7 +51,7 @@ public class FTPConnectionManager {
 
     private FTPClient ftpClient;
     private String server = "121.179.183.64";
-    private int port = 21;
+    private int port = 300;
     private String user = "hakim";
     private String password = "kgb0563";
     private boolean ftp_connected = false;
@@ -55,6 +59,8 @@ public class FTPConnectionManager {
     private FileOutputStream fos;
     private FileInputStream fis;
     private ExecutorService executorService;
+    private ChannelSftp sftpChannel;
+    private Session session;
 
     public FTPConnectionManager() {
         EventBus.getDefault().register(this);
@@ -63,29 +69,33 @@ public class FTPConnectionManager {
 
     //SD카드 삽입되면 이벤트 발생 감지하여 FTP 로그인
     public void connectFTP() throws IOException {
+
+
         if(!ftp_connected) {
-            try {
-                ftpClient = new FTPClient();
-                ftpClient.connect(server, port);
-                int reply = ftpClient.getReplyCode();
-                //230 로그인 성공
-                if(FTPReply.isPositiveCompletion(reply)){
-                    ftpClient.login(user,password);
-                    ftp_connected = true;
-                    Log.d("test","FTP 로그인 성공");
-                }
-                else {
-                    ftpClient.disconnect();
-                    ftp_connected = false;
-                    Log.d("test","FTP 로그인 실패 연결 코드 : "+ reply);
-                }
-            } catch (Exception e) {
-                if (ftpClient.isConnected()) {
-                    Log.e("test", "connectFTP catch : ", e);
-                    ftpClient.disconnect();
-                }
-                Log.e("test", "connectFTP Error : ", e);
-            }
+
+//            try {
+//                Log.d("test","connectFTP!!");
+//                ftpClient = new FTPClient();
+//                ftpClient.connect(server, port);
+//                int reply = ftpClient.getReplyCode();
+//                //230 로그인 성공
+//                if(FTPReply.isPositiveCompletion(reply)){
+//                    ftpClient.login(user,password);
+//                    ftp_connected = true;
+//                    Log.d("test","FTP 로그인 성공");
+//                }
+//                else {
+//                    ftpClient.disconnect();
+//                    ftp_connected = false;
+//                    Log.d("test","FTP 로그인 실패 연결 코드 : "+ reply);
+//                }
+//            } catch (Exception e) {
+//                if (ftpClient.isConnected()) {
+//                    Log.e("test", "connectFTP catch : ", e);
+//                    ftpClient.disconnect();
+//                }
+//                Log.e("test", "connectFTP Error : ", e);
+//            }
         }
     }
     //촬영 이벤트 감지 메서드
@@ -185,7 +195,8 @@ public class FTPConnectionManager {
             try {
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
                 ftpClient.enterLocalPassiveMode();
-                String serverFilePath = "/srv/ftp/" + fileName;
+                //String serverFilePath = "/srv/ftp/" + fileName;
+                String serverFilePath = "/home/hakim" + fileName;
                 try {
                     fis = new FileInputStream(localfile);
                     boolean result = ftpClient.storeFile(serverFilePath,fis);
