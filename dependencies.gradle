@@ -20,7 +20,7 @@ ext {
     deps.rx2Java = 'io.reactivex.rxjava2:rxjava:2.2.4' // 目前在CSDK升级模块中使用rxjava2
     deps.maplibreAnotation = 'org.maplibre.gl:android-plugin-annotation-v9:1.0.0'
     deps.maplibreTurf = 'org.maplibre.gl:android-sdk-turf:5.9.0'
-    deps.maplibreSdk = 'org.maplibre.gl:android-sdk:9.4.2'
+    deps.maplibreSdk = 'org.maplibre.gl:android-sdk:9.5.2'
     deps.lottie = 'com.airbnb.android:lottie:3.3.1'//RTK扫描页中使用，用于实现动画效果
     deps.cardview = 'androidx.cardview:cardview:1.0.0'//PopoverView中使用
     deps.material = 'com.google.android.material:material:1.0.0'//AvoidanceShortcutWidget使用

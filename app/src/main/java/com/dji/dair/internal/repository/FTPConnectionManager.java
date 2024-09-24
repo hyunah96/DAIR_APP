@@ -4,8 +4,10 @@ import android.net.Network;
 import android.os.Environment;
 import android.os.Handler;
 
+import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import android.util.Log;
 import android.widget.Toast;
@@ -43,6 +45,7 @@ import dji.v5.ux.visualcamera.storage.SDCardInsertedEvent;
 import dji.v5.ux.cameracore.widget.cameracapture.shootphoto.ShootPhotoEvent;
 import dji.v5.ux.visualcamera.storage.SDCardRemovedEvent;
 
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,17 +53,18 @@ import java.util.concurrent.Executors;
 public class FTPConnectionManager {
 
     private FTPClient ftpClient;
-    private String server = "121.179.183.64";
-    private int port = 300;
-    private String user = "hakim";
-    private String password = "kgb0563";
+    private static String server = "121.179.183.64";
+    private static int port = 300;
+    private static String user = "hakim";
+    private static String password = "kgb0563";
     private boolean ftp_connected = false;
     private boolean onUpdate = false;
     private FileOutputStream fos;
     private FileInputStream fis;
     private ExecutorService executorService;
-    private ChannelSftp sftpChannel;
-    private Session session;
+    private Channel channel = null;
+
+    private ChannelSftp channelSftp = null;
 
     public FTPConnectionManager() {
         EventBus.getDefault().register(this);
@@ -68,35 +72,23 @@ public class FTPConnectionManager {
     }
 
     //SD카드 삽입되면 이벤트 발생 감지하여 FTP 로그인
-    public void connectFTP() throws IOException {
+    public static Session getSFTPConnection() throws JSchException {
+        JSch jSch = new JSch();
+        Session session = null;
+            try {
+                Log.d("test","session");
+                session = jSch.getSession(user, server, port);
+                session.setPassword(password);
+                Properties config = new Properties();
+                config.put("StricHostKeyChecking", "no");
+                session.setConfig(config);
+                session.connect();
+                Log.d("test","session.connect();");
+            } catch (Exception e){
+                e.printStackTrace();
+            }
 
-
-        if(!ftp_connected) {
-
-//            try {
-//                Log.d("test","connectFTP!!");
-//                ftpClient = new FTPClient();
-//                ftpClient.connect(server, port);
-//                int reply = ftpClient.getReplyCode();
-//                //230 로그인 성공
-//                if(FTPReply.isPositiveCompletion(reply)){
-//                    ftpClient.login(user,password);
-//                    ftp_connected = true;
-//                    Log.d("test","FTP 로그인 성공");
-//                }
-//                else {
-//                    ftpClient.disconnect();
-//                    ftp_connected = false;
-//                    Log.d("test","FTP 로그인 실패 연결 코드 : "+ reply);
-//                }
-//            } catch (Exception e) {
-//                if (ftpClient.isConnected()) {
-//                    Log.e("test", "connectFTP catch : ", e);
-//                    ftpClient.disconnect();
-//                }
-//                Log.e("test", "connectFTP Error : ", e);
-//            }
-        }
+        return session;
     }
     //촬영 이벤트 감지 메서드
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -220,8 +212,8 @@ public class FTPConnectionManager {
 //                conte
 //    }
     @Subscribe
-    public void onSDCardInserted(SDCardInsertedEvent event) throws IOException {
-        connectFTP();
+    public void onSDCardInserted(SDCardInsertedEvent event) throws JSchException {
+        getSFTPConnection();
     }
 
     @Subscribe
@@ -230,7 +222,6 @@ public class FTPConnectionManager {
         Log.d("test","ftpClient??? "+ ftp_connected);
         if(ftpClient.isConnected() && ftp_connected) {
             try {
-                Log.d("test", "trytrytrytry");
                 ftpClient.logout();
                 //ftpClient.disconnect();
                 ftp_connected = false;

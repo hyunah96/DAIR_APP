@@ -69,7 +69,7 @@ dependencies {
 
     api 'org.maplibre.gl:android-plugin-annotation-v9:1.0.0'
     api 'org.maplibre.gl:android-sdk-turf:5.9.0'
-    api 'org.maplibre.gl:android-sdk:9.4.2'
+    api 'org.maplibre.gl:android-sdk:9.5.2'
     api 'com.amap.api:3dmap:7.3.0'
     api 'com.amap.api:search:7.3.0'
 
