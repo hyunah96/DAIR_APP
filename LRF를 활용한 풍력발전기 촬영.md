@@ -321,7 +321,7 @@ public void connectFTP() throws IOException {
 }
 ```
 
-### 7-3. 특정 거리값 감지 <---- 수정해야함
+### 7-3. 특정 거리값 감지
 
 ```java
 private void laserStateListener() {
